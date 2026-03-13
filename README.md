@@ -1,5 +1,5 @@
 -- EDSON SCRIPT V6 - PROFESSIONAL ULTIMATE EDITION
--- DESIGN PREMIUM | PALETA DE CORES SOFISTICADA | LAYOUT PERFEITO
+-- DESIGN PREMIUM | LAYOUT CORRIGIDO | ELEMENTOS ORGANIZADOS
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -49,8 +49,8 @@ local Colors = {
 
 local ESPObjects = {}
 local Minimized = false
-local MainSize = UDim2.new(0, 520, 0, 450)
-local MinSize = UDim2.new(0, 520, 0, 50)
+local MainSize = UDim2.new(0, 600, 0, 480)
+local MinSize = UDim2.new(0, 600, 0, 50)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
 local function addCorner(obj, radius)
@@ -77,33 +77,6 @@ local function addGradient(obj, color1, color2, rotation)
     gradient.Parent = obj
 end
 
-local function addShadow(obj, transparency, offset)
-    local shadow = Instance.new("ImageLabel")
-    shadow.Name = "Shadow"
-    shadow.Parent = obj
-    shadow.BackgroundTransparency = 1
-    shadow.Position = UDim2.new(0, -10, 0, -10)
-    shadow.Size = UDim2.new(1, 20, 1, 20)
-    shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-    shadow.ImageColor3 = Color3.new(0, 0, 0)
-    shadow.ImageTransparency = transparency or 0.8
-    shadow.ScaleType = Enum.ScaleType.Slice
-    shadow.SliceCenter = Rect.new(10, 10, 10, 10)
-    shadow.ZIndex = obj.ZIndex - 1
-end
-
-local function createBlurEffect(parent, size)
-    local blur = Instance.new("Frame")
-    blur.Name = "Blur"
-    blur.Parent = parent
-    blur.Size = UDim2.new(1, 0, 1, 0)
-    blur.BackgroundColor3 = Color3.new(1, 1, 1)
-    blur.BackgroundTransparency = 0.95
-    blur.ZIndex = parent.ZIndex + 1
-    blur.BorderSizePixel = 0
-    return blur
-end
-
 local function IsPlayerVisible(player)
     if not Config.VisibleCheck then return true end
     if not player or not player.Character then return false end
@@ -123,14 +96,13 @@ end
 -- ==================== INTERFACE PREMIUM ====================
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = MainSize
-Main.Position = UDim2.new(0.5, -260, 0.5, -225)
+Main.Position = UDim2.new(0.5, -300, 0.5, -240)
 Main.BackgroundColor3 = Colors.Background
 Main.BackgroundTransparency = 0.05
 Main.Active = true
 Main.Draggable = true
 addCorner(Main, 20)
 addStroke(Main, 1.5, Colors.Primary, 0.6)
-addShadow(Main, 0.7)
 
 -- Efeito de brilho nas bordas
 local GlowBorder = Instance.new("Frame", Main)
@@ -144,66 +116,45 @@ glowStroke.Color = Colors.Accent
 glowStroke.Transparency = 0.8
 glowStroke.Parent = GlowBorder
 
--- Efeito de brilho interno
-local InnerGlow = Instance.new("Frame", Main)
-InnerGlow.Size = UDim2.new(1, -2, 1, -2)
-InnerGlow.Position = UDim2.new(0, 1, 0, 1)
-InnerGlow.BackgroundTransparency = 1
-addCorner(InnerGlow, 19)
-local innerStroke = Instance.new("UIStroke")
-innerStroke.Thickness = 1
-innerStroke.Color = Colors.Text
-innerStroke.Transparency = 0.9
-innerStroke.Parent = InnerGlow
-
 -- TOP BAR PREMIUM
 local Top = Instance.new("Frame", Main)
-Top.Size = UDim2.new(1, 0, 0, 60)
+Top.Size = UDim2.new(1, 0, 0, 70)
 Top.BackgroundColor3 = Colors.Surface
 Top.BackgroundTransparency = 0.1
 Top.BorderSizePixel = 0
 addCorner(Top, 20)
 addGradient(Top, Colors.Surface, Colors.SurfaceLight, 90)
 
--- Logo/Ícone
-local Logo = Instance.new("ImageLabel", Top)
-Logo.Size = UDim2.new(0, 40, 0, 40)
-Logo.Position = UDim2.new(0, 15, 0.5, -20)
-Logo.BackgroundTransparency = 1
-Logo.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
-Logo.ImageColor3 = Colors.Accent
-Logo.ImageTransparency = 0.2
-
 local Title = Instance.new("TextLabel", Top)
 Title.Size = UDim2.new(1, -120, 1, 0)
-Title.Position = UDim2.new(0, 65, 0, 0)
+Title.Position = UDim2.new(0, 20, 0, 0)
 Title.Text = "EDSON SCRIPT V6"
 Title.BackgroundTransparency = 1
 Title.TextColor3 = Colors.Text
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 24
+Title.TextSize = 28
 Title.TextXAlignment = Enum.TextXAlignment.Left
 Title.TextStrokeTransparency = 0.3
 Title.TextStrokeColor3 = Colors.Primary
 
 local SubTitle = Instance.new("TextLabel", Top)
 SubTitle.Size = UDim2.new(1, -120, 0, 20)
-SubTitle.Position = UDim2.new(0, 65, 0.5, 8)
+SubTitle.Position = UDim2.new(0, 20, 0.5, 12)
 SubTitle.Text = "PROFESSIONAL EDITION"
 SubTitle.BackgroundTransparency = 1
 SubTitle.TextColor3 = Colors.TextDim
 SubTitle.Font = Enum.Font.Gotham
-SubTitle.TextSize = 12
+SubTitle.TextSize = 14
 SubTitle.TextXAlignment = Enum.TextXAlignment.Left
 
 -- BOTÕES DA TOP BAR
 local function createTopButton(parent, text, posX, color)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0, 40, 0, 40)
-    btn.Position = UDim2.new(1, posX, 0.5, -20)
+    btn.Size = UDim2.new(0, 45, 0, 45)
+    btn.Position = UDim2.new(1, posX, 0.5, -22.5)
     btn.Text = text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 22
+    btn.TextSize = 24
     btn.TextColor3 = Colors.Text
     btn.BackgroundColor3 = color or Colors.SurfaceLight
     btn.BackgroundTransparency = 0.3
@@ -228,60 +179,44 @@ local function createTopButton(parent, text, posX, color)
     return btn
 end
 
-local MinimizeBtn = createTopButton(Top, "−", -90, Colors.SurfaceLight)
-local CloseBtn = createTopButton(Top, "✕", -40, Colors.Danger)
+local MinimizeBtn = createTopButton(Top, "−", -100, Colors.SurfaceLight)
+local CloseBtn = createTopButton(Top, "✕", -45, Colors.Danger)
 
 CloseBtn.MouseButton1Click:Connect(function()
     ScreenGui:Destroy()
 end)
 
--- SIDE MENU LUXUOSO
+-- SIDE MENU
 local Side = Instance.new("Frame", Main)
-Side.Size = UDim2.new(0, 140, 1, -60)
-Side.Position = UDim2.new(0, 0, 0, 60)
+Side.Size = UDim2.new(0, 160, 1, -70)
+Side.Position = UDim2.new(0, 0, 0, 70)
 Side.BackgroundColor3 = Colors.Surface
 Side.BackgroundTransparency = 0.15
 Side.BorderSizePixel = 0
 addCorner(Side, 16)
 addGradient(Side, Colors.Surface, Color3.fromRGB(28, 32, 42), 180)
 
--- Linha decorativa
-local SideLine = Instance.new("Frame", Side)
-SideLine.Size = UDim2.new(1, -30, 0, 1)
-SideLine.Position = UDim2.new(0, 15, 1, -15)
-SideLine.BackgroundColor3 = Colors.Primary
-SideLine.BackgroundTransparency = 0.5
-addCorner(SideLine, 1)
-
--- CONTENT AREA COM EFEITO GLASSMORPHISM
+-- CONTENT AREA
 local Content = Instance.new("Frame", Main)
-Content.Position = UDim2.new(0, 140, 0, 60)
-Content.Size = UDim2.new(1, -140, 1, -60)
+Content.Position = UDim2.new(0, 160, 0, 70)
+Content.Size = UDim2.new(1, -160, 1, -70)
 Content.BackgroundColor3 = Colors.Background
 Content.BackgroundTransparency = 0.2
 Content.BorderSizePixel = 0
 addCorner(Content, 16)
 
--- Efeito glassmorphism
-local GlassEffect = Instance.new("Frame", Content)
-GlassEffect.Size = UDim2.new(1, -2, 1, -2)
-GlassEffect.Position = UDim2.new(0, 1, 0, 1)
-GlassEffect.BackgroundColor3 = Colors.Text
-GlassEffect.BackgroundTransparency = 0.95
-GlassEffect.BorderSizePixel = 0
-addCorner(GlassEffect, 15)
-
--- ABAS COM DESIGN MODERNO
+-- ABAS
 local function createTab(parent)
     local tab = Instance.new("ScrollingFrame", parent)
-    tab.Size = UDim2.new(1, -30, 1, -30)
-    tab.Position = UDim2.new(0, 15, 0, 15)
+    tab.Size = UDim2.new(1, -20, 1, -20)
+    tab.Position = UDim2.new(0, 10, 0, 10)
     tab.BackgroundTransparency = 1
     tab.ScrollBarThickness = 4
     tab.ScrollBarImageColor3 = Colors.Primary
-    tab.CanvasSize = UDim2.new(0, 0, 0, 600)
+    tab.CanvasSize = UDim2.new(0, 0, 0, 800)
     tab.BorderSizePixel = 0
-    tab.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    tab.ScrollingEnabled = true
+    tab.ScrollBarImageTransparency = 0.5
     return tab
 end
 
@@ -294,14 +229,14 @@ VisualTab.Visible = false
 local SettingsTab = createTab(Content)
 SettingsTab.Visible = false
 
--- BOTÕES DE ABA COM ÍCONES
+-- BOTÕES DE ABA
 local function createNavButton(text, icon, pos, tab)
     local btn = Instance.new("TextButton", Side)
-    btn.Size = UDim2.new(1, -20, 0, 55)
+    btn.Size = UDim2.new(1, -20, 0, 60)
     btn.Position = UDim2.new(0, 10, 0, pos)
     btn.Text = icon .. "  " .. text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 16
+    btn.TextSize = 18
     btn.TextColor3 = Colors.TextDim
     btn.BackgroundColor3 = Colors.SurfaceLight
     btn.BackgroundTransparency = 0.3
@@ -330,39 +265,26 @@ local function createNavButton(text, icon, pos, tab)
         VisualTab.Visible = false
         SettingsTab.Visible = false
         tab.Visible = true
-        
-        TweenService:Create(btn, TweenInfo.new(0.1), {
-            BackgroundColor3 = Colors.Accent,
-            TextColor3 = Colors.Text
-        }):Play()
-        wait(0.1)
-        TweenService:Create(btn, TweenInfo.new(0.2), {
-            BackgroundColor3 = Colors.Primary
-        }):Play()
     end)
     
     return btn
 end
 
 local AimNav = createNavButton("AIM", "🎯", 15, AimTab)
-local VisualNav = createNavButton("VISUAL", "👁️", 80, VisualTab)
-local SettingsNav = createNavButton("SETTINGS", "⚙️", 145, SettingsTab)
+local VisualNav = createNavButton("VISUAL", "👁️", 85, VisualTab)
+local SettingsNav = createNavButton("SETTINGS", "⚙️", 155, SettingsTab)
 
 -- FUNÇÃO MINIMIZAR
 MinimizeBtn.MouseButton1Click:Connect(function()
     Minimized = not Minimized
     
     if Minimized then
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
-            Size = MinSize
-        }):Play()
+        TweenService:Create(Main, TweenInfo.new(0.4), {Size = MinSize}):Play()
         MinimizeBtn.Text = "+"
         Side.Visible = false
         Content.Visible = false
     else
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quad), {
-            Size = MainSize
-        }):Play()
+        TweenService:Create(Main, TweenInfo.new(0.4), {Size = MainSize}):Play()
         MinimizeBtn.Text = "−"
         wait(0.2)
         Side.Visible = true
@@ -370,41 +292,43 @@ MinimizeBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- FUNÇÃO PARA CRIAR CARDS
-local function createCard(parent, title, yPos)
-    local card = Instance.new("Frame", parent)
-    card.Size = UDim2.new(1, -20, 0, 100)
-    card.Position = UDim2.new(0, 10, 0, yPos)
-    card.BackgroundColor3 = Colors.Surface
-    card.BackgroundTransparency = 0.3
-    card.BorderSizePixel = 0
-    addCorner(card, 16)
-    addStroke(card, 1, Colors.Primary, 0.8)
+-- ==================== COMPONENTES REUTILIZÁVEIS ====================
+
+-- FUNÇÃO PARA CRIAR SEÇÕES ORGANIZADAS
+local function createSection(parent, title, yPos, height)
+    local section = Instance.new("Frame", parent)
+    section.Size = UDim2.new(1, -20, 0, height or 140)
+    section.Position = UDim2.new(0, 10, 0, yPos)
+    section.BackgroundColor3 = Colors.Surface
+    section.BackgroundTransparency = 0.3
+    section.BorderSizePixel = 0
+    addCorner(section, 16)
+    addStroke(section, 1, Colors.Primary, 0.8)
     
-    local cardTitle = Instance.new("TextLabel", card)
-    cardTitle.Size = UDim2.new(1, -20, 0, 30)
-    cardTitle.Position = UDim2.new(0, 10, 0, 5)
-    cardTitle.Text = title
-    cardTitle.BackgroundTransparency = 1
-    cardTitle.TextColor3 = Colors.Accent
-    cardTitle.Font = Enum.Font.GothamBold
-    cardTitle.TextSize = 14
-    cardTitle.TextXAlignment = Enum.TextXAlignment.Left
+    local sectionTitle = Instance.new("TextLabel", section)
+    sectionTitle.Size = UDim2.new(1, -20, 0, 30)
+    sectionTitle.Position = UDim2.new(0, 10, 0, 5)
+    sectionTitle.Text = title
+    sectionTitle.BackgroundTransparency = 1
+    sectionTitle.TextColor3 = Colors.Accent
+    sectionTitle.Font = Enum.Font.GothamBold
+    sectionTitle.TextSize = 16
+    sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
     
-    local cardLine = Instance.new("Frame", card)
-    cardLine.Size = UDim2.new(1, -20, 0, 1)
-    cardLine.Position = UDim2.new(0, 10, 0, 35)
-    cardLine.BackgroundColor3 = Colors.Primary
-    cardLine.BackgroundTransparency = 0.5
-    addCorner(cardLine, 1)
+    local divider = Instance.new("Frame", section)
+    divider.Size = UDim2.new(1, -20, 0, 1)
+    divider.Position = UDim2.new(0, 10, 0, 35)
+    divider.BackgroundColor3 = Colors.Primary
+    divider.BackgroundTransparency = 0.5
+    addCorner(divider, 1)
     
-    return card
+    return section
 end
 
--- FUNÇÃO TOGGLE PREMIUM
-local function createToggle(parent, text, x, y, width, key)
+-- FUNÇÃO TOGGLE PADRÃO (MESMO TAMANHO)
+local function createToggle(parent, text, x, y, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0, width or 150, 0, 40)
+    btn.Size = UDim2.new(0, 140, 0, 35)
     btn.Position = UDim2.new(0, x, 0, y)
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 14
@@ -412,7 +336,7 @@ local function createToggle(parent, text, x, y, width, key)
     btn.BackgroundColor3 = Colors.SurfaceLight
     btn.BackgroundTransparency = 0.2
     btn.BorderSizePixel = 0
-    addCorner(btn, 12)
+    addCorner(btn, 10)
     addStroke(btn, 1, Colors.Primary, 0.6)
     
     local function update()
@@ -423,41 +347,16 @@ local function createToggle(parent, text, x, y, width, key)
     btn.MouseButton1Click:Connect(function()
         Config[key] = not Config[key]
         update()
-        
-        TweenService:Create(btn, TweenInfo.new(0.1), {
-            BackgroundColor3 = Colors.Accent,
-            Size = UDim2.new(0, (width or 150) + 5, 0, 45)
-        }):Play()
-        
-        wait(0.1)
-        
-        TweenService:Create(btn, TweenInfo.new(0.2), {
-            BackgroundColor3 = Config[key] and Colors.Success or Colors.SurfaceLight,
-            Size = UDim2.new(0, width or 150, 0, 40)
-        }):Play()
-    end)
-    
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.2), {
-            BackgroundTransparency = 0.05,
-            TextColor3 = Colors.Text
-        }):Play()
-    end)
-    
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.2), {
-            BackgroundTransparency = 0.2
-        }):Play()
     end)
     
     update()
     return btn
 end
 
--- FUNÇÃO SLIDER PREMIUM
+-- FUNÇÃO SLIDER PADRÃO
 local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, callback)
     local container = Instance.new("Frame", parent)
-    container.Size = UDim2.new(0, 200, 0, 50)
+    container.Size = UDim2.new(0, 220, 0, 50)
     container.Position = UDim2.new(0, x, 0, y)
     container.BackgroundTransparency = 1
     
@@ -484,10 +383,10 @@ local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, cal
     addGradient(fill, Colors.Primary, Colors.Accent, 90)
     
     local knob = Instance.new("Frame", sliderBg)
-    knob.Size = UDim2.new(0, 18, 0, 18)
-    knob.Position = UDim2.new(fill.Size.X.Scale, -9, -0.5, -6)
+    knob.Size = UDim2.new(0, 16, 0, 16)
+    knob.Position = UDim2.new(fill.Size.X.Scale, -8, -0.5, -5)
     knob.BackgroundColor3 = Colors.Text
-    addCorner(knob, 9)
+    addCorner(knob, 8)
     addStroke(knob, 1.5, Colors.Primary, 0.3)
     
     local dragging = false
@@ -495,20 +394,12 @@ local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, cal
     knob.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = true
-            TweenService:Create(knob, TweenInfo.new(0.1), {
-                Size = UDim2.new(0, 22, 0, 22),
-                BackgroundColor3 = Colors.Accent
-            }):Play()
         end
     end)
     
     UIS.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
-            TweenService:Create(knob, TweenInfo.new(0.2), {
-                Size = UDim2.new(0, 18, 0, 18),
-                BackgroundColor3 = Colors.Text
-            }):Play()
         end
     end)
     
@@ -516,7 +407,7 @@ local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, cal
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - sliderBg.AbsolutePosition.X) / sliderBg.AbsoluteSize.X, 0, 1)
             fill.Size = UDim2.new(pos, 0, 1, 0)
-            knob.Position = UDim2.new(pos, -9, -0.5, -6)
+            knob.Position = UDim2.new(pos, -8, -0.5, -5)
             local value = minVal + (pos * (maxVal - minVal))
             lbl.Text = label .. ": " .. math.floor(value)
             callback(value)
@@ -526,10 +417,10 @@ local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, cal
     return container
 end
 
--- FUNÇÃO PARA CRIAR DROPDOWN
+-- FUNÇÃO DROPDOWN PADRÃO
 local function createDropdown(parent, label, x, y, options, callback)
     local container = Instance.new("Frame", parent)
-    container.Size = UDim2.new(0, 200, 0, 50)
+    container.Size = UDim2.new(0, 220, 0, 50)
     container.Position = UDim2.new(0, x, 0, y)
     container.BackgroundTransparency = 1
     
@@ -561,26 +452,25 @@ local function createDropdown(parent, label, x, y, options, callback)
     end)
 end
 
--- ==================== CONTEÚDO DAS ABAS ====================
+-- ==================== CONTEÚDO DA AIM TAB ====================
+local yPos = 10
 
--- AIM TAB
-local aimCard1 = createCard(AimTab, "AIMBOT CONFIGURATION", 10)
-local aimCard2 = createCard(AimTab, "FOV SETTINGS", 120)
-local aimCard3 = createCard(AimTab, "ADVANCED", 230)
+-- Seção 1: Aimbot Principal
+local aimSection1 = createSection(AimTab, "AIMBOT PRIMARY", yPos, 130)
+yPos = yPos + 140
 
--- Card 1 - Aimbot
-createToggle(aimCard1, "AIMBOT", 10, 45, 160, "AimEnabled")
+createToggle(aimSection1, "AIMBOT", 10, 45, "AimEnabled")
 
-local modeBtn = Instance.new("TextButton", aimCard1)
-modeBtn.Size = UDim2.new(0, 150, 0, 40)
-modeBtn.Position = UDim2.new(0, 180, 0, 45)
+local modeBtn = Instance.new("TextButton", aimSection1)
+modeBtn.Size = UDim2.new(0, 140, 0, 35)
+modeBtn.Position = UDim2.new(0, 160, 0, 45)
 modeBtn.Text = "MODE: LEGIT"
 modeBtn.Font = Enum.Font.GothamBold
 modeBtn.TextColor3 = Colors.Text
 modeBtn.BackgroundColor3 = Colors.SurfaceLight
 modeBtn.BackgroundTransparency = 0.2
 modeBtn.BorderSizePixel = 0
-addCorner(modeBtn, 12)
+addCorner(modeBtn, 10)
 addStroke(modeBtn, 1, Colors.Primary, 0.6)
 
 modeBtn.MouseButton1Click:Connect(function()
@@ -588,49 +478,60 @@ modeBtn.MouseButton1Click:Connect(function()
     modeBtn.Text = "MODE: " .. Config.AimMode:upper()
 end)
 
-createToggle(aimCard1, "TEAM", 10, 95, 100, "TeamCheck")
-createToggle(aimCard1, "VISIBLE", 120, 95, 100, "VisibleCheck")
+createToggle(aimSection1, "TEAM", 10, 85, "TeamCheck")
+createToggle(aimSection1, "VISIBLE", 160, 85, "VisibleCheck")
 
--- Card 2 - FOV
-createToggle(aimCard2, "SHOW FOV", 10, 45, 160, "FOVVisible")
-createSlider(aimCard2, "FOV SIZE", 180, 45, 50, 300, 150, function(v) Config.FOVSize = v end)
+-- Seção 2: FOV
+local aimSection2 = createSection(AimTab, "FIELD OF VIEW", yPos, 130)
+yPos = yPos + 140
 
--- Card 3 - Advanced
-createSlider(aimCard3, "SMOOTHNESS", 10, 45, 1, 20, 3, function(v) Config.Smoothness = v/10 end)
-createDropdown(aimCard3, "TARGET PART", 180, 45, {"Head", "Torso", "Root"}, function(part)
+createToggle(aimSection2, "SHOW FOV", 10, 45, "FOVVisible")
+createSlider(aimSection2, "FOV SIZE", 160, 45, 50, 300, 150, function(v) Config.FOVSize = v end)
+
+-- Seção 3: Avançado
+local aimSection3 = createSection(AimTab, "ADVANCED", yPos, 130)
+yPos = yPos + 140
+
+createSlider(aimSection3, "SMOOTHNESS", 10, 45, 1, 20, 3, function(v) Config.Smoothness = v/10 end)
+createDropdown(aimSection3, "TARGET PART", 240, 45, {"Head", "Torso", "Root"}, function(part)
     Config.SelectedPart = part == "Head" and "Head" or (part == "Torso" and "Torso" or "HumanoidRootPart")
 end)
 
--- VISUAL TAB
-local visualCard1 = createCard(VisualTab, "ESP MASTER CONTROL", 10)
-local visualCard2 = createCard(VisualTab, "ESP ELEMENTS", 120)
-local visualCard3 = createCard(VisualTab, "VISUAL FEATURES", 230)
+-- ==================== CONTEÚDO DA VISUAL TAB ====================
+local vYPos = 10
 
-createToggle(visualCard1, "MASTER ESP", 10, 45, 300, "ESPEnabled")
+-- Seção 1: ESP Master
+local visSection1 = createSection(VisualTab, "ESP MASTER CONTROL", vYPos, 90)
+vYPos = vYPos + 100
 
-createToggle(visualCard2, "BOX", 10, 45, 120, "BoxEnabled")
-createToggle(visualCard2, "NAME", 140, 45, 120, "NameEnabled")
-createToggle(visualCard2, "HEALTH", 10, 95, 120, "HealthEnabled")
-createToggle(visualCard2, "DISTANCE", 140, 95, 120, "DistEnabled")
+createToggle(visSection1, "MASTER ESP", 10, 45, "ESPEnabled")
 
-createToggle(visualCard3, "SKELETON", 10, 45, 160, "SkeletonEnabled")
+-- Seção 2: Elementos ESP
+local visSection2 = createSection(VisualTab, "ESP ELEMENTS", vYPos, 170)
+vYPos = vYPos + 180
 
--- SETTINGS TAB
-local settingsCard = createCard(SettingsTab, "INTERFACE CUSTOMIZATION", 10)
+createToggle(visSection2, "BOX", 10, 45, "BoxEnabled")
+createToggle(visSection2, "NAME", 160, 45, "NameEnabled")
+createToggle(visSection2, "HEALTH", 10, 85, "HealthEnabled")
+createToggle(visSection2, "DISTANCE", 160, 85, "DistEnabled")
+createToggle(visSection2, "SKELETON", 10, 125, "SkeletonEnabled")
+
+-- ==================== CONTEÚDO DA SETTINGS TAB ====================
+local sYPos = 10
+
+-- Seção 1: Interface
+local setSection1 = createSection(SettingsTab, "INTERFACE CUSTOMIZATION", sYPos, 150)
+sYPos = sYPos + 160
 
 -- Color Picker
-local colorPicker = Instance.new("Frame", settingsCard)
-colorPicker.Size = UDim2.new(1, -20, 0, 100)
-colorPicker.Position = UDim2.new(0, 10, 0, 45)
-colorPicker.BackgroundTransparency = 1
-
-local colorTitle = Instance.new("TextLabel", colorPicker)
-colorTitle.Size = UDim2.new(1, 0, 0, 25)
-colorTitle.Text = "THEME COLOR"
-colorTitle.TextColor3 = Colors.Text
-colorTitle.BackgroundTransparency = 1
-colorTitle.Font = Enum.Font.GothamBold
-colorTitle.TextXAlignment = Enum.TextXAlignment.Left
+local colorLabel = Instance.new("TextLabel", setSection1)
+colorLabel.Size = UDim2.new(0, 100, 0, 25)
+colorLabel.Position = UDim2.new(0, 10, 0, 45)
+colorLabel.Text = "THEME COLOR"
+colorLabel.TextColor3 = Colors.Text
+colorLabel.BackgroundTransparency = 1
+colorLabel.Font = Enum.Font.GothamBold
+colorLabel.TextXAlignment = Enum.TextXAlignment.Left
 
 local colors = {
     {Color3.fromRGB(98, 114, 164), "ROXO"},
@@ -649,16 +550,15 @@ local function updateThemeColor(color)
     
     Top.BackgroundColor3 = Colors.Surface
     glowStroke.Color = Colors.Accent
-    SideLine.BackgroundColor3 = Colors.Primary
     AimTab.ScrollBarImageColor3 = Colors.Primary
     VisualTab.ScrollBarImageColor3 = Colors.Primary
     SettingsTab.ScrollBarImageColor3 = Colors.Primary
 end
 
 for i, colorData in ipairs(colors) do
-    local colorBtn = Instance.new("TextButton", colorPicker)
-    colorBtn.Size = UDim2.new(0, 50, 0, 30)
-    colorBtn.Position = UDim2.new(0, (i-1) * 60, 0, 30)
+    local colorBtn = Instance.new("TextButton", setSection1)
+    colorBtn.Size = UDim2.new(0, 45, 0, 30)
+    colorBtn.Position = UDim2.new(0, 120 + (i-1) * 55, 0, 45)
     colorBtn.Text = ""
     colorBtn.BackgroundColor3 = colorData[1]
     colorBtn.BorderSizePixel = 0
@@ -890,5 +790,4 @@ end)
 
 Players.PlayerRemoving:Connect(ClearESP)
 
-print("✅ EDSON SCRIPT V6 - PROFESSIONAL ULTIMATE EDITION CARREGADO")
-print("✅ DESIGN PREMIUM | PALETA SOFISTICADA | LAYOUT PERFEITO")
+print("✅ EDSON SCRIPT V6 - LAYOUT CORRIGIDO E ORGANIZADO")
