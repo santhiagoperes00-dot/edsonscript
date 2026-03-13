@@ -1,5 +1,6 @@
 -- EDSON SCRIPT V5 - ULTIMATE EDITION (VERSÃO DEFINITIVA)
 -- COR: AZUL FORTE | ESP REALISTA COM CABEÇA | BOX AJUSTADA | VIDA NA LATERAL | BOTÕES VERDES | MENU COMPLETO
+-- LAYOUT PROFISSIONAL COM FUNDO TRANSPARENTE E BOTÃO DE MINIMIZAR
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -37,6 +38,9 @@ local MainColor = Color3.fromRGB(0, 100, 255) -- AZUL FORTE
 local OnColor = Color3.fromRGB(46, 204, 113) -- VERDE
 local OffColor = Color3.fromRGB(231, 76, 60) -- VERMELHO
 local ESPObjects = {}
+local Minimized = false
+local MainSize = UDim2.new(0, 480, 0, 400)
+local MinSize = UDim2.new(0, 480, 0, 45)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
 local function addCorner(obj, radius)
@@ -45,12 +49,34 @@ local function addCorner(obj, radius)
     corner.Parent = obj
 end
 
-local function addStroke(obj, thickness, color)
+local function addStroke(obj, thickness, color, transparency)
     local stroke = Instance.new("UIStroke")
     stroke.Thickness = thickness
     stroke.Color = color or Color3.new(0,0,0)
-    stroke.Transparency = 0.5
+    stroke.Transparency = transparency or 0.5
     stroke.Parent = obj
+end
+
+local function addShadow(obj, transparency, offset)
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "Shadow"
+    shadow.Parent = obj
+    shadow.BackgroundTransparency = 1
+    shadow.Position = UDim2.new(0, -5, 0, -5)
+    shadow.Size = UDim2.new(1, 10, 1, 10)
+    shadow.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+    shadow.ImageColor3 = Color3.new(0, 0, 0)
+    shadow.ImageTransparency = transparency or 0.7
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(10, 10, 10, 10)
+    shadow.ZIndex = obj.ZIndex - 1
+end
+
+local function createGradient(obj, color1, color2)
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, color1), ColorSequenceKeypoint.new(1, color2)})
+    gradient.Rotation = 90
+    gradient.Parent = obj
 end
 
 local function IsPlayerVisible(player)
@@ -71,100 +97,257 @@ end
 
 -- ==================== INTERFACE (MENU) ====================
 local Main = Instance.new("Frame", ScreenGui)
-Main.Size = UDim2.new(0, 480, 0, 400)
+Main.Size = MainSize
 Main.Position = UDim2.new(0.5, -240, 0.5, -200)
-Main.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
+Main.BackgroundColor3 = Color3.fromRGB(15, 15, 18)
+Main.BackgroundTransparency = 0.1
 Main.Active = true
 Main.Draggable = true
-addCorner(Main, 12)
-addStroke(Main, 1, Color3.fromRGB(60, 60, 60))
+addCorner(Main, 16)
+addStroke(Main, 1.5, Color3.fromRGB(80, 80, 90), 0.3)
+createGradient(Main, Color3.fromRGB(25, 25, 30), Color3.fromRGB(10, 10, 12))
 
+-- Efeito de brilho nas bordas
+local Glow = Instance.new("Frame", Main)
+Glow.Size = UDim2.new(1, 4, 1, 4)
+Glow.Position = UDim2.new(0, -2, 0, -2)
+Glow.BackgroundTransparency = 1
+Glow.BorderSizePixel = 0
+local glowCorner = Instance.new("UICorner")
+glowCorner.CornerRadius = UDim.new(0, 18)
+glowCorner.Parent = Glow
+local glowStroke = Instance.new("UIStroke")
+glowStroke.Thickness = 2
+glowStroke.Color = MainColor
+glowStroke.Transparency = 0.8
+glowStroke.Parent = Glow
+
+-- TOP BAR COM EFEITO MODERNO
 local Top = Instance.new("Frame", Main)
-Top.Size = UDim2.new(1, 0, 0, 45)
+Top.Size = UDim2.new(1, 0, 0, 50)
 Top.BackgroundColor3 = MainColor
-addCorner(Top, 12)
+Top.BackgroundTransparency = 0.05
+Top.BorderSizePixel = 0
+addCorner(Top, 16)
+createGradient(Top, MainColor, MainColor:Lerp(Color3.new(1,1,1), 0.2))
+
+-- Ícone decorativo
+local Icon = Instance.new("ImageLabel", Top)
+Icon.Size = UDim2.new(0, 30, 0, 30)
+Icon.Position = UDim2.new(0, 15, 0.5, -15)
+Icon.BackgroundTransparency = 1
+Icon.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+Icon.ImageColor3 = Color3.new(1, 1, 1)
+Icon.ImageTransparency = 0.2
 
 local Title = Instance.new("TextLabel", Top)
-Title.Size = UDim2.new(1, -80, 1, 0)
-Title.Position = UDim2.new(0, 15, 0, 0)
-Title.Text = "⚡ EDSON SCRIPT V5 ULTIMATE ⚡"
+Title.Size = UDim2.new(1, -100, 1, 0)
+Title.Position = UDim2.new(0, 50, 0, 0)
+Title.Text = "⚡ EDSON SCRIPT V5 ⚡"
 Title.BackgroundTransparency = 1
 Title.TextColor3 = Color3.new(1, 1, 1)
 Title.Font = Enum.Font.GothamBold
-Title.TextSize = 18
+Title.TextSize = 20
 Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.TextStrokeTransparency = 0.5
+Title.TextStrokeColor3 = Color3.new(0,0,0)
 
+-- BOTÕES DA TOP BAR
+local MinimizeBtn = Instance.new("TextButton", Top)
+MinimizeBtn.Size = UDim2.new(0, 35, 0, 35)
+MinimizeBtn.Position = UDim2.new(1, -80, 0.5, -17.5)
+MinimizeBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+MinimizeBtn.BackgroundTransparency = 0.85
+MinimizeBtn.Text = "−"
+MinimizeBtn.TextColor3 = Color3.new(1, 1, 1)
+MinimizeBtn.TextSize = 24
+MinimizeBtn.Font = Enum.Font.GothamBold
+addCorner(MinimizeBtn, 10)
+addStroke(MinimizeBtn, 1, Color3.new(1,1,1), 0.7)
+
+local CloseBtn = Instance.new("TextButton", Top)
+CloseBtn.Size = UDim2.new(0, 35, 0, 35)
+CloseBtn.Position = UDim2.new(1, -40, 0.5, -17.5)
+CloseBtn.BackgroundColor3 = Color3.fromRGB(255, 70, 70)
+CloseBtn.BackgroundTransparency = 0.2
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.new(1, 1, 1)
+CloseBtn.TextSize = 18
+CloseBtn.Font = Enum.Font.GothamBold
+addCorner(CloseBtn, 10)
+addStroke(CloseBtn, 1, Color3.new(1,1,1), 0.3)
+
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- FUNÇÃO MINIMIZAR
+MinimizeBtn.MouseButton1Click:Connect(function()
+    Minimized = not Minimized
+    
+    if Minimized then
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = MinSize,
+            BackgroundTransparency = 0.2
+        }):Play()
+        MinimizeBtn.Text = "+"
+        Side.Visible = false
+        Content.Visible = false
+    else
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Size = MainSize,
+            BackgroundTransparency = 0.1
+        }):Play()
+        MinimizeBtn.Text = "−"
+        wait(0.2)
+        Side.Visible = true
+        Content.Visible = true
+    end
+end)
+
+-- SIDE MENU MODERNO
 local Side = Instance.new("Frame", Main)
-Side.Size = UDim2.new(0, 110, 1, -45)
-Side.Position = UDim2.new(0, 0, 0, 45)
-Side.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
+Side.Size = UDim2.new(0, 120, 1, -50)
+Side.Position = UDim2.new(0, 0, 0, 50)
+Side.BackgroundColor3 = Color3.fromRGB(20, 20, 24)
+Side.BackgroundTransparency = 0.1
+Side.BorderSizePixel = 0
 addCorner(Side, 12)
+createGradient(Side, Color3.fromRGB(25, 25, 30), Color3.fromRGB(15, 15, 18))
 
+-- Linha divisória
+local Divider = Instance.new("Frame", Side)
+Divider.Size = UDim2.new(1, -20, 0, 1)
+Divider.Position = UDim2.new(0, 10, 1, -1)
+Divider.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+Divider.BackgroundTransparency = 0.5
+addCorner(Divider, 1)
+
+-- CONTENT AREA
 local Content = Instance.new("Frame", Main)
-Content.Position = UDim2.new(0, 110, 0, 45)
-Content.Size = UDim2.new(1, -110, 1, -45)
+Content.Position = UDim2.new(0, 120, 0, 50)
+Content.Size = UDim2.new(1, -120, 1, -50)
 Content.BackgroundTransparency = 1
 
+-- ABAS
 local AimTab = Instance.new("ScrollingFrame", Content)
-AimTab.Size = UDim2.new(1, 0, 1, 0)
+AimTab.Size = UDim2.new(1, -20, 1, -20)
+AimTab.Position = UDim2.new(0, 10, 0, 10)
 AimTab.BackgroundTransparency = 1
 AimTab.ScrollBarThickness = 4
+AimTab.ScrollBarImageColor3 = MainColor
 AimTab.CanvasSize = UDim2.new(0,0,0,500)
 AimTab.Visible = true
+AimTab.BorderSizePixel = 0
 
 local VisualTab = Instance.new("ScrollingFrame", Content)
-VisualTab.Size = UDim2.new(1, 0, 1, 0)
+VisualTab.Size = UDim2.new(1, -20, 1, -20)
+VisualTab.Position = UDim2.new(0, 10, 0, 10)
 VisualTab.BackgroundTransparency = 1
 VisualTab.ScrollBarThickness = 4
+VisualTab.ScrollBarImageColor3 = MainColor
 VisualTab.CanvasSize = UDim2.new(0,0,0,500)
 VisualTab.Visible = false
+VisualTab.BorderSizePixel = 0
 
 local SettingsTab = Instance.new("ScrollingFrame", Content)
-SettingsTab.Size = UDim2.new(1, 0, 1, 0)
+SettingsTab.Size = UDim2.new(1, -20, 1, -20)
+SettingsTab.Position = UDim2.new(0, 10, 0, 10)
 SettingsTab.BackgroundTransparency = 1
 SettingsTab.ScrollBarThickness = 4
+SettingsTab.ScrollBarImageColor3 = MainColor
 SettingsTab.CanvasSize = UDim2.new(0,0,0,300)
 SettingsTab.Visible = false
+SettingsTab.BorderSizePixel = 0
 
--- BOTÕES DE ABA
+-- BOTÕES DE ABA COM EFEITO MODERNO
 local function createTabBtn(text, pos, tab)
     local b = Instance.new("TextButton", Side)
-    b.Size = UDim2.new(1, -10, 0, 50)
-    b.Position = UDim2.new(0, 5, 0, pos)
+    b.Size = UDim2.new(1, -20, 0, 55)
+    b.Position = UDim2.new(0, 10, 0, pos)
     b.Text = text
     b.Font = Enum.Font.GothamBold
-    b.TextColor3 = Color3.new(1,1,1)
-    b.BackgroundColor3 = Color3.fromRGB(35, 35, 42)
-    addCorner(b, 8)
+    b.TextSize = 16
+    b.TextColor3 = Color3.new(0.9,0.9,0.9)
+    b.BackgroundColor3 = Color3.fromRGB(30, 30, 36)
+    b.BackgroundTransparency = 0.2
+    b.BorderSizePixel = 0
+    addCorner(b, 12)
+    addStroke(b, 1, Color3.fromRGB(60, 60, 70), 0.3)
+    
+    -- Efeito hover
+    b.MouseEnter:Connect(function()
+        TweenService:Create(b, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(45, 45, 52),
+            BackgroundTransparency = 0.1,
+            TextColor3 = Color3.new(1,1,1)
+        }):Play()
+    end)
+    b.MouseLeave:Connect(function()
+        TweenService:Create(b, TweenInfo.new(0.2), {
+            BackgroundColor3 = Color3.fromRGB(30, 30, 36),
+            BackgroundTransparency = 0.2,
+            TextColor3 = Color3.new(0.9,0.9,0.9)
+        }):Play()
+    end)
+    
     b.MouseButton1Click:Connect(function()
         AimTab.Visible = false
         VisualTab.Visible = false
         SettingsTab.Visible = false
         tab.Visible = true
+        
+        -- Efeito de clique
+        TweenService:Create(b, TweenInfo.new(0.1), {BackgroundColor3 = MainColor}):Play()
+        wait(0.1)
+        TweenService:Create(b, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(45, 45, 52)}):Play()
     end)
 end
-createTabBtn("🎯 AIM", 10, AimTab)
-createTabBtn("👁️ VISUAL", 70, VisualTab)
-createTabBtn("⚙️ SET", 130, SettingsTab)
 
--- FUNÇÃO TOGGLE COM FEEDBACK VERDE
+createTabBtn("🎯 AIM", 15, AimTab)
+createTabBtn("👁️ VISUAL", 80, VisualTab)
+createTabBtn("⚙️ SETTINGS", 145, SettingsTab)
+
+-- FUNÇÃO TOGGLE COM EFEITO MODERNO
 local function createToggle(parent, text, x, y, width, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0, width or 160, 0, 35)
+    btn.Size = UDim2.new(0, width or 160, 0, 40)
     btn.Position = UDim2.new(0, x, 0, y)
     btn.Font = Enum.Font.GothamBold
+    btn.TextSize = 14
     btn.TextColor3 = Color3.new(1,1,1)
-    addCorner(btn, 6)
+    btn.BorderSizePixel = 0
+    addCorner(btn, 10)
+    addStroke(btn, 1, Color3.fromRGB(0,0,0), 0.3)
     
     local function update()
         btn.Text = text .. ": " .. (Config[key] and "ON" or "OFF")
         btn.BackgroundColor3 = Config[key] and OnColor or OffColor
+        btn.BackgroundTransparency = 0.1
     end
-    btn.MouseButton1Click:Connect(function() Config[key] = not Config[key]; update() end)
+    
+    btn.MouseButton1Click:Connect(function()
+        Config[key] = not Config[key]
+        update()
+        
+        -- Efeito de clique
+        TweenService:Create(btn, TweenInfo.new(0.1), {BackgroundTransparency = 0}):Play()
+        wait(0.1)
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
+    end)
+    
+    -- Efeito hover
+    btn.MouseEnter:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0}):Play()
+    end)
+    btn.MouseLeave:Connect(function()
+        TweenService:Create(btn, TweenInfo.new(0.2), {BackgroundTransparency = 0.1}):Play()
+    end)
+    
     update()
 end
 
--- FUNÇÃO SLIDER RESTAURADA
+-- FUNÇÃO SLIDER COM DESIGN MODERNO
 local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, callback)
     local lbl = Instance.new("TextLabel", parent)
     lbl.Size = UDim2.new(0,200,0,20)
@@ -174,32 +357,49 @@ local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, cal
     lbl.BackgroundTransparency = 1
     lbl.Font = Enum.Font.Gotham
     lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.TextStrokeTransparency = 0.5
     
     local slider = Instance.new("Frame", parent)
-    slider.Size = UDim2.new(0,200,0,4)
+    slider.Size = UDim2.new(0,200,0,6)
     slider.Position = UDim2.new(0, x, 0, y + 25)
-    slider.BackgroundColor3 = Color3.fromRGB(60,60,70)
-    addCorner(slider, 2)
+    slider.BackgroundColor3 = Color3.fromRGB(40, 40, 45)
+    slider.BackgroundTransparency = 0.3
+    addCorner(slider, 3)
+    addStroke(slider, 1, Color3.fromRGB(0,0,0), 0.5)
     
     local fill = Instance.new("Frame", slider)
     fill.Size = UDim2.new((defaultVal-minVal)/(maxVal-minVal),0,1,0)
     fill.BackgroundColor3 = MainColor
-    addCorner(fill, 2)
+    addCorner(fill, 3)
+    createGradient(fill, MainColor, MainColor:Lerp(Color3.new(1,1,1), 0.3))
     
     local knob = Instance.new("Frame", slider)
-    knob.Size = UDim2.new(0,12,0,12)
-    knob.Position = UDim2.new(fill.Size.X.Scale, -6, -1, 0)
+    knob.Size = UDim2.new(0, 16, 0, 16)
+    knob.Position = UDim2.new(fill.Size.X.Scale, -8, -0.5, -5)
     knob.BackgroundColor3 = MainColor
-    addCorner(knob, 6)
+    addCorner(knob, 8)
+    addStroke(knob, 1.5, Color3.new(1,1,1), 0.3)
     
     local dragging = false
-    knob.InputBegan:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end end)
-    UIS.InputEnded:Connect(function(input) if input.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
+    knob.InputBegan:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then 
+            dragging = true
+            TweenService:Create(knob, TweenInfo.new(0.1), {Size = UDim2.new(0,20,0,20)}):Play()
+        end 
+    end)
+    
+    UIS.InputEnded:Connect(function(input) 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then 
+            dragging = false
+            TweenService:Create(knob, TweenInfo.new(0.2), {Size = UDim2.new(0,16,0,16)}):Play()
+        end 
+    end)
+    
     UIS.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
             fill.Size = UDim2.new(pos,0,1,0)
-            knob.Position = UDim2.new(pos, -6, -1, 0)
+            knob.Position = UDim2.new(pos, -8, -0.5, -5)
             local value = minVal + (pos * (maxVal - minVal))
             lbl.Text = label .. ": " .. math.floor(value)
             callback(value)
@@ -208,50 +408,79 @@ local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, cal
 end
 
 -- BOTÕES AIM
-createToggle(AimTab, "AIMBOT", 10, 10, 330, "AimEnabled")
+createToggle(AimTab, "AIMBOT", 10, 10, 320, "AimEnabled")
+
 local ModeBtn = Instance.new("TextButton", AimTab)
-ModeBtn.Size = UDim2.new(0, 160, 0, 35)
-ModeBtn.Position = UDim2.new(0, 10, 0, 55)
+ModeBtn.Size = UDim2.new(0, 155, 0, 40)
+ModeBtn.Position = UDim2.new(0, 10, 0, 60)
 ModeBtn.Text = "MODE: LEGIT"
 ModeBtn.Font = Enum.Font.GothamBold
+ModeBtn.TextSize = 14
 ModeBtn.TextColor3 = Color3.new(1,1,1)
-ModeBtn.BackgroundColor3 = Color3.fromRGB(60,60,70)
-addCorner(ModeBtn, 6)
+ModeBtn.BackgroundColor3 = Color3.fromRGB(50, 50, 55)
+ModeBtn.BackgroundTransparency = 0.1
+ModeBtn.BorderSizePixel = 0
+addCorner(ModeBtn, 10)
+addStroke(ModeBtn, 1, Color3.fromRGB(0,0,0), 0.3)
+
 ModeBtn.MouseButton1Click:Connect(function()
     Config.AimMode = (Config.AimMode == "Legit") and "Rage" or "Legit"
     ModeBtn.Text = "MODE: " .. Config.AimMode:upper()
+    
+    -- Efeito de clique
+    TweenService:Create(ModeBtn, TweenInfo.new(0.1), {BackgroundColor3 = MainColor}):Play()
+    wait(0.1)
+    TweenService:Create(ModeBtn, TweenInfo.new(0.2), {BackgroundColor3 = Color3.fromRGB(50, 50, 55)}):Play()
 end)
 
-createToggle(AimTab, "TEAM CHECK", 180, 55, 160, "TeamCheck")
-createToggle(AimTab, "VIS CHECK", 10, 100, 160, "VisibleCheck")
-createToggle(AimTab, "SHOW FOV", 180, 100, 160, "FOVVisible")
-createSlider(AimTab, "SMOOTHNESS", 10, 150, 1, 10, 3, function(v) Config.Smoothness = v/10 end)
-createSlider(AimTab, "FOV SIZE", 10, 210, 10, 500, 150, function(v) Config.FOVSize = v end)
+createToggle(AimTab, "TEAM", 175, 60, 155, "TeamCheck")
+createToggle(AimTab, "VISIBLE", 10, 110, 155, "VisibleCheck")
+createToggle(AimTab, "SHOW FOV", 175, 110, 155, "FOVVisible")
+createSlider(AimTab, "SMOOTHNESS", 10, 165, 1, 10, 3, function(v) Config.Smoothness = v/10 end)
+createSlider(AimTab, "FOV SIZE", 10, 230, 10, 500, 150, function(v) Config.FOVSize = v end)
 
 -- BOTÕES VISUAL
-createToggle(VisualTab, "MASTER ESP", 10, 10, 330, "ESPEnabled")
-createToggle(VisualTab, "BOX", 10, 55, 160, "BoxEnabled")
-createToggle(VisualTab, "SKELETON", 180, 55, 160, "SkeletonEnabled")
-createToggle(VisualTab, "NAME", 10, 100, 160, "NameEnabled")
-createToggle(VisualTab, "HEALTH", 180, 100, 160, "HealthEnabled")
-createToggle(VisualTab, "DISTANCE", 10, 145, 160, "DistEnabled")
+createToggle(VisualTab, "MASTER ESP", 10, 10, 320, "ESPEnabled")
+createToggle(VisualTab, "BOX", 10, 60, 155, "BoxEnabled")
+createToggle(VisualTab, "SKELETON", 175, 60, 155, "SkeletonEnabled")
+createToggle(VisualTab, "NAME", 10, 110, 155, "NameEnabled")
+createToggle(VisualTab, "HEALTH", 175, 110, 155, "HealthEnabled")
+createToggle(VisualTab, "DISTANCE", 10, 160, 155, "DistEnabled")
 
--- BOTÕES SETTINGS (COLOR PICKER RESTAURADO)
+-- BOTÕES SETTINGS (COLOR PICKER)
 local colorBtn = Instance.new("TextButton", SettingsTab)
-colorBtn.Size = UDim2.new(0, 330, 0, 35)
+colorBtn.Size = UDim2.new(0, 320, 0, 45)
 colorBtn.Position = UDim2.new(0, 10, 0, 10)
-colorBtn.Text = "MUDAR COR DO MENU"
+colorBtn.Text = "🎨 MUDAR COR DO MENU"
 colorBtn.Font = Enum.Font.GothamBold
+colorBtn.TextSize = 16
 colorBtn.TextColor3 = Color3.new(1,1,1)
 colorBtn.BackgroundColor3 = MainColor
-addCorner(colorBtn, 6)
-local colors = {Color3.fromRGB(0, 100, 255), Color3.fromRGB(220, 40, 80), Color3.fromRGB(50, 200, 50), Color3.fromRGB(255, 140, 0), Color3.fromRGB(180, 0, 255)}
+colorBtn.BackgroundTransparency = 0.1
+colorBtn.BorderSizePixel = 0
+addCorner(colorBtn, 12)
+addStroke(colorBtn, 1.5, Color3.new(1,1,1), 0.3)
+createGradient(colorBtn, MainColor, MainColor:Lerp(Color3.new(1,1,1), 0.2))
+
+local colors = {
+    Color3.fromRGB(0, 100, 255),   -- Azul
+    Color3.fromRGB(220, 40, 80),   -- Rosa
+    Color3.fromRGB(50, 200, 50),   -- Verde
+    Color3.fromRGB(255, 140, 0),   -- Laranja
+    Color3.fromRGB(180, 0, 255)    -- Roxo
+}
 local colorIdx = 1
+
 colorBtn.MouseButton1Click:Connect(function()
     colorIdx = colorIdx % #colors + 1
     MainColor = colors[colorIdx]
     Top.BackgroundColor3 = MainColor
     colorBtn.BackgroundColor3 = MainColor
+    Glow.UIStroke.Color = MainColor
+    
+    -- Atualizar gradientes
+    createGradient(Top, MainColor, MainColor:Lerp(Color3.new(1,1,1), 0.2))
+    createGradient(colorBtn, MainColor, MainColor:Lerp(Color3.new(1,1,1), 0.2))
 end)
 
 -- ==================== LÓGICA DO ESP ====================
@@ -327,10 +556,18 @@ end
 
 -- ==================== LOOP PRINCIPAL ====================
 local FOV = Drawing.new("Circle")
-FOV.Thickness = 1; FOV.NumSides = 60; FOV.Filled = false; FOV.Transparency = 0.7
+FOV.Thickness = 2
+FOV.NumSides = 60
+FOV.Filled = false
+FOV.Transparency = 0.5
+FOV.Color = MainColor
 
 RunService.RenderStepped:Connect(function()
-    FOV.Radius = Config.FOVSize; FOV.Visible = Config.FOVVisible; FOV.Color = MainColor
+    -- Atualizar cor do FOV
+    FOV.Color = MainColor
+    
+    FOV.Radius = Config.FOVSize
+    FOV.Visible = Config.FOVVisible
     FOV.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
 
     if not Config.ESPEnabled then
@@ -364,35 +601,47 @@ RunService.RenderStepped:Connect(function()
                     
                     esp.Box.Visible = Config.BoxEnabled
                     if Config.BoxEnabled then
-                        esp.Box.Size = Vector2.new(w, h); esp.Box.Position = Vector2.new(minX, minY); esp.Box.Color = color
+                        esp.Box.Size = Vector2.new(w, h)
+                        esp.Box.Position = Vector2.new(minX, minY)
+                        esp.Box.Color = color
                     end
                     
                     esp.HealthBar.Visible = Config.HealthEnabled
                     esp.HealthBarBack.Visible = Config.HealthEnabled
                     if Config.HealthEnabled then
                         local hp = hum.Health / hum.MaxHealth
-                        esp.HealthBarBack.Size = Vector2.new(4, h); esp.HealthBarBack.Position = Vector2.new(minX - 6, minY)
-                        esp.HealthBar.Size = Vector2.new(4, h * hp); esp.HealthBar.Position = Vector2.new(minX - 6, minY + (h - h * hp))
+                        esp.HealthBarBack.Size = Vector2.new(4, h)
+                        esp.HealthBarBack.Position = Vector2.new(minX - 6, minY)
+                        esp.HealthBar.Size = Vector2.new(4, h * hp)
+                        esp.HealthBar.Position = Vector2.new(minX - 6, minY + (h - h * hp))
                         esp.HealthBar.Color = Color3.fromHSV(hp/3, 1, 1)
                     end
                     
                     esp.Name.Visible = Config.NameEnabled
                     if Config.NameEnabled then
-                        esp.Name.Text = player.Name; esp.Name.Position = Vector2.new(minX + w/2, minY - 16)
+                        esp.Name.Text = player.Name
+                        esp.Name.Position = Vector2.new(minX + w/2, minY - 16)
                     end
                     
                     esp.Dist.Visible = Config.DistEnabled
                     if Config.DistEnabled then
                         local d = (Camera.CFrame.Position - char.HumanoidRootPart.Position).Magnitude
-                        esp.Dist.Text = math.floor(d) .. "m"; esp.Dist.Position = Vector2.new(minX + w/2, minY + h + 5)
+                        esp.Dist.Text = math.floor(d) .. "m"
+                        esp.Dist.Position = Vector2.new(minX + w/2, minY + h + 5)
                     end
                     
-                    if Config.SkeletonEnabled then DrawSkeleton(char, esp, color) else
+                    if Config.SkeletonEnabled then 
+                        DrawSkeleton(char, esp, color) 
+                    else
                         esp.HeadCircle.Visible = false
                         for _, l in ipairs(esp.Skeleton) do l.Visible = false end
                     end
-                else ClearESP(player) end
-            elseif ESPObjects[player] then ClearESP(player) end
+                else 
+                    ClearESP(player) 
+                end
+            elseif ESPObjects[player] then 
+                ClearESP(player) 
+            end
         end
     end
 
@@ -427,3 +676,4 @@ end)
 
 Players.PlayerRemoving:Connect(ClearESP)
 print("✅ EDSON SCRIPT V5 ULTIMATE DEFINITIVO CARREGADO")
+print("✅ LAYOUT PROFISSIONAL ATIVADO | BOTÃO DE MINIMIZAR | FUNDO TRANSPARENTE")
