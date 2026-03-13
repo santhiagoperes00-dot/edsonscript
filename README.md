@@ -1,5 +1,5 @@
--- EDSON SCRIPT V4 - ULTIMATE EDITION
--- CORRIGIDO: ESP, FOV, AIMBOT LEGIT/RAGE
+-- EDSON SCRIPT V5 - ULTIMATE EDITION
+-- COR: AZUL FORTE | ESP DETALHADO | BOX CORRIGIDA
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -15,49 +15,24 @@ ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 ScreenGui.DisplayOrder = 999
 
 -- VARIÁVEIS GLOBAIS
-local AimMode = "Legit" -- "Legit" ou "Rage"
+local AimMode = "Legit"
 local AimEnabled = false
 local ESPEnabled = false
 local TeamCheck = false
 local SelectedPart = "Head"
 local Smoothness = 0.3
-local FOVSize = 150 -- Tamanho máximo 250
+local FOVSize = 150
 local FOVVisible = false
-local MainColor = Color3.fromRGB(220, 40, 80)
+local MainColor = Color3.fromRGB(0, 100, 255) -- AZUL FORTE
 local Minimized = false
-local VisibleCheck = true -- Só mira em quem está visível
-local MainSize = UDim2.new(0,450,0,350)
-local MinSize = UDim2.new(0,450,0,40)
+local VisibleCheck = true
+local MainSize = UDim2.new(0,480,0,400)
+local MinSize = UDim2.new(0,480,0,40)
 
 -- VARIÁVEIS ESP
 local ESPObjects = {}
-local SkeletonLines = {}
 
--- FUNÇÃO DE UTILIDADE
-local function IsPlayerVisible(player)
-    if not VisibleCheck then return true end
-    if not player or not player.Character then return false end
-    
-    local character = player.Character
-    local head = character:FindFirstChild("Head")
-    local root = character:FindFirstChild("HumanoidRootPart")
-    
-    if not head or not root then return false end
-    
-    -- Raycast para verificar se tem obstáculo
-    local origin = Camera.CFrame.Position
-    local direction = (head.Position - origin).Unit * (head.Position - origin).Magnitude
-    
-    local raycastParams = RaycastParams.new()
-    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character, character}
-    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
-    
-    local result = workspace:Raycast(origin, direction, raycastParams)
-    
-    return result == nil
-end
-
--- FUNÇÕES DE INTERFACE
+-- FUNÇÕES DE UTILIDADE
 local function addCorner(obj, radius)
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, radius)
@@ -72,11 +47,33 @@ local function addStroke(obj, thickness, color)
     stroke.Parent = obj
 end
 
+local function IsPlayerVisible(player)
+    if not VisibleCheck then return true end
+    if not player or not player.Character then return false end
+    
+    local character = player.Character
+    local head = character:FindFirstChild("Head")
+    local root = character:FindFirstChild("HumanoidRootPart")
+    
+    if not head or not root then return false end
+    
+    local origin = Camera.CFrame.Position
+    local direction = (head.Position - origin).Unit * (head.Position - origin).Magnitude
+    
+    local raycastParams = RaycastParams.new()
+    raycastParams.FilterDescendantsInstances = {LocalPlayer.Character, character}
+    raycastParams.FilterType = Enum.RaycastFilterType.Blacklist
+    
+    local result = workspace:Raycast(origin, direction, raycastParams)
+    
+    return result == nil
+end
+
 -- MAIN FRAME
 local Main = Instance.new("Frame")
 Main.Parent = ScreenGui
 Main.Size = MainSize
-Main.Position = UDim2.new(0.5,-225,0.5,-175)
+Main.Position = UDim2.new(0.5,-240,0.5,-200)
 Main.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 Main.Active = true
 Main.Draggable = true
@@ -95,7 +92,7 @@ local Title = Instance.new("TextLabel")
 Title.Parent = Top
 Title.Size = UDim2.new(1,-80,1,0)
 Title.Position = UDim2.new(0,15,0,0)
-Title.Text = "⚡ EDSON SCRIPT V4 ⚡"
+Title.Text = "⚡ EDSON SCRIPT V5 ⚡"
 Title.BackgroundTransparency = 1
 Title.TextColor3 = Color3.new(1,1,1)
 Title.Font = Enum.Font.GothamBold
@@ -133,7 +130,7 @@ end)
 -- SIDE MENU
 local Side = Instance.new("Frame")
 Side.Parent = Main
-Side.Size = UDim2.new(0,100,1,-45)
+Side.Size = UDim2.new(0,110,1,-45)
 Side.Position = UDim2.new(0,0,0,45)
 Side.BackgroundColor3 = Color3.fromRGB(24, 24, 30)
 Side.BorderSizePixel = 0
@@ -142,8 +139,8 @@ addCorner(Side, 12)
 -- CONTENT AREA
 local Content = Instance.new("Frame")
 Content.Parent = Main
-Content.Position = UDim2.new(0,100,0,45)
-Content.Size = UDim2.new(1,-100,1,-45)
+Content.Position = UDim2.new(0,110,0,45)
+Content.Size = UDim2.new(1,-110,1,-45)
 Content.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
 Content.BorderSizePixel = 0
 addCorner(Content, 12)
@@ -155,7 +152,7 @@ AimTab.Size = UDim2.new(1,0,1,0)
 AimTab.BackgroundTransparency = 1
 AimTab.ScrollBarThickness = 4
 AimTab.ScrollBarImageColor3 = MainColor
-AimTab.CanvasSize = UDim2.new(0,0,0,450)
+AimTab.CanvasSize = UDim2.new(0,0,0,500)
 AimTab.BorderSizePixel = 0
 
 local VisualTab = Instance.new("ScrollingFrame")
@@ -164,7 +161,7 @@ VisualTab.Size = UDim2.new(1,0,1,0)
 VisualTab.BackgroundTransparency = 1
 VisualTab.ScrollBarThickness = 4
 VisualTab.ScrollBarImageColor3 = MainColor
-VisualTab.CanvasSize = UDim2.new(0,0,0,400)
+VisualTab.CanvasSize = UDim2.new(0,0,0,500)
 VisualTab.BorderSizePixel = 0
 VisualTab.Visible = false
 
@@ -182,7 +179,7 @@ SettingsTab.Visible = false
 local function createTabButton(emoji, name, pos)
     local b = Instance.new("TextButton")
     b.Parent = Side
-    b.Size = UDim2.new(1,-10,0,55)
+    b.Size = UDim2.new(1,-10,0,60)
     b.Position = UDim2.new(0,5,0,pos)
     b.Text = emoji .. "  " .. name
     b.Font = Enum.Font.GothamBold
@@ -202,8 +199,8 @@ local function createTabButton(emoji, name, pos)
 end
 
 local AimButton = createTabButton("🎯", "AIM", 10)
-local VisualButton = createTabButton("👁️", "VISUAL", 75)
-local SettingsButton = createTabButton("⚙️", "SET", 140)
+local VisualButton = createTabButton("👁️", "VISUAL", 80)
+local SettingsButton = createTabButton("⚙️", "SET", 150)
 
 -- FUNÇÃO TROCAR ABA
 local function switch(tab)
@@ -235,12 +232,12 @@ MinimizeBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- FUNÇÃO PARA CRIAR BOTÕES
-local function createModernButton(parent, text, posY, color)
+-- FUNÇÃO PARA CRIAR BOTÕES (ORGANIZADOS EM GRID)
+local function createButton(parent, text, x, y, width, color)
     local btn = Instance.new("TextButton")
     btn.Parent = parent
-    btn.Size = UDim2.new(0,180,0,35)
-    btn.Position = UDim2.new(0,15,0,posY)
+    btn.Size = UDim2.new(0, width or 140, 0, 35)
+    btn.Position = UDim2.new(0, x, 0, y)
     btn.Text = text
     btn.Font = Enum.Font.GothamBold
     btn.TextColor3 = Color3.new(1,1,1)
@@ -251,13 +248,11 @@ local function createModernButton(parent, text, posY, color)
 end
 
 -- FUNÇÃO PARA CRIAR SLIDER
-local function createSlider(parent, label, posY, minVal, maxVal, defaultVal, callback)
-    local yPos = posY
-    
+local function createSlider(parent, label, x, y, minVal, maxVal, defaultVal, callback)
     local lbl = Instance.new("TextLabel")
     lbl.Parent = parent
-    lbl.Size = UDim2.new(0,150,0,20)
-    lbl.Position = UDim2.new(0,15,0,yPos)
+    lbl.Size = UDim2.new(0,200,0,20)
+    lbl.Position = UDim2.new(0, x, 0, y)
     lbl.Text = label .. ": " .. defaultVal
     lbl.TextColor3 = Color3.new(1,1,1)
     lbl.BackgroundTransparency = 1
@@ -266,8 +261,8 @@ local function createSlider(parent, label, posY, minVal, maxVal, defaultVal, cal
     
     local slider = Instance.new("Frame")
     slider.Parent = parent
-    slider.Size = UDim2.new(0,180,0,4)
-    slider.Position = UDim2.new(0,15,0,yPos + 25)
+    slider.Size = UDim2.new(0,200,0,4)
+    slider.Position = UDim2.new(0, x, 0, y + 25)
     slider.BackgroundColor3 = Color3.fromRGB(60,60,70)
     addCorner(slider, 2)
     
@@ -317,42 +312,23 @@ local function createSlider(parent, label, posY, minVal, maxVal, defaultVal, cal
 end
 
 -- ==================== ABA AIM ====================
-local yPos = 10
-
 local aimTitle = Instance.new("TextLabel")
 aimTitle.Parent = AimTab
 aimTitle.Size = UDim2.new(1,0,0,30)
-aimTitle.Position = UDim2.new(0,0,0,yPos)
-aimTitle.Text = "🎯 AIMBOT CONFIG"
+aimTitle.Position = UDim2.new(0,10,0,10)
+aimTitle.Text = "🎯 AIMBOT CONFIGURATIONS"
 aimTitle.TextColor3 = MainColor
 aimTitle.BackgroundTransparency = 1
 aimTitle.Font = Enum.Font.GothamBold
-aimTitle.TextSize = 16
-yPos = yPos + 40
+aimTitle.TextSize = 18
+aimTitle.TextXAlignment = Enum.TextXAlignment.Left
 
--- AIM MODE SELECTOR
-local modeLabel = Instance.new("TextLabel")
-modeLabel.Parent = AimTab
-modeLabel.Size = UDim2.new(0,80,0,25)
-modeLabel.Position = UDim2.new(0,15,0,yPos)
-modeLabel.Text = "MODE:"
-modeLabel.TextColor3 = Color3.new(1,1,1)
-modeLabel.BackgroundTransparency = 1
+-- AIM MODE (Linha 1)
+local legitBtn = createButton(AimTab, "LEGIT", 10, 50, 130, Color3.fromRGB(0,150,0))
+local rageBtn = createButton(AimTab, "RAGE", 150, 50, 130, Color3.fromRGB(150,0,0))
 
-local legitBtn = createModernButton(AimTab, "LEGIT", yPos, Color3.fromRGB(0,150,0))
-legitBtn.Size = UDim2.new(0,70,0,25)
-legitBtn.Position = UDim2.new(0,80,0,yPos)
-legitBtn.TextSize = 12
-
-local rageBtn = createModernButton(AimTab, "RAGE", yPos, Color3.fromRGB(150,0,0))
-rageBtn.Size = UDim2.new(0,70,0,25)
-rageBtn.Position = UDim2.new(0,155,0,yPos)
-rageBtn.TextSize = 12
-yPos = yPos + 35
-
--- AIM TOGGLE
-local aimToggle = createModernButton(AimTab, "🔫 AIMBOT: OFF", yPos, Color3.fromRGB(60,60,70))
-yPos = yPos + 45
+-- AIM TOGGLE (Linha 2)
+local aimToggle = createButton(AimTab, "🔫 AIMBOT: OFF", 10, 100, 270, Color3.fromRGB(60,60,70))
 
 aimToggle.MouseButton1Click:Connect(function()
     AimEnabled = not AimEnabled
@@ -360,52 +336,42 @@ aimToggle.MouseButton1Click:Connect(function()
     aimToggle.BackgroundColor3 = AimEnabled and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- TEAM CHECK
-local teamToggle = createModernButton(AimTab, "🛡️ TEAM CHECK: OFF", yPos, Color3.fromRGB(60,60,70))
-yPos = yPos + 45
+-- TEAM CHECK + VISIBLE CHECK (Linha 3)
+local teamToggle = createButton(AimTab, "🛡️ TEAM: OFF", 10, 150, 130, Color3.fromRGB(60,60,70))
+local visibleToggle = createButton(AimTab, "👁️ VISIBLE: ON", 150, 150, 130, Color3.fromRGB(0,150,0))
 
 teamToggle.MouseButton1Click:Connect(function()
     TeamCheck = not TeamCheck
-    teamToggle.Text = TeamCheck and "🛡️ TEAM CHECK: ON" or "🛡️ TEAM CHECK: OFF"
+    teamToggle.Text = TeamCheck and "🛡️ TEAM: ON" or "🛡️ TEAM: OFF"
     teamToggle.BackgroundColor3 = TeamCheck and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- VISIBLE CHECK
-local visibleToggle = createModernButton(AimTab, "👁️ VISIBLE CHECK: ON", yPos, Color3.fromRGB(0,150,0))
-yPos = yPos + 45
-
 visibleToggle.MouseButton1Click:Connect(function()
     VisibleCheck = not VisibleCheck
-    visibleToggle.Text = VisibleCheck and "👁️ VISIBLE CHECK: ON" or "👁️ VISIBLE CHECK: OFF"
+    visibleToggle.Text = VisibleCheck and "👁️ VISIBLE: ON" or "👁️ VISIBLE: OFF"
     visibleToggle.BackgroundColor3 = VisibleCheck and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- TARGET PART
+-- TARGET PART + FOV TOGGLE (Linha 4)
 local partLabel = Instance.new("TextLabel")
 partLabel.Parent = AimTab
-partLabel.Size = UDim2.new(0,60,0,25)
-partLabel.Position = UDim2.new(0,15,0,yPos)
+partLabel.Size = UDim2.new(0,40,0,25)
+partLabel.Position = UDim2.new(0,10,0,200)
 partLabel.Text = "PART:"
 partLabel.TextColor3 = Color3.new(1,1,1)
 partLabel.BackgroundTransparency = 1
 
-local partBtn = createModernButton(AimTab, "Head", yPos, Color3.fromRGB(80,80,90))
-partBtn.Size = UDim2.new(0,100,0,25)
-partBtn.Position = UDim2.new(0,80,0,yPos)
-yPos = yPos + 45
+local partBtn = createButton(AimTab, "Head", 55, 200, 85, Color3.fromRGB(80,80,90))
+local fovToggle = createButton(AimTab, "🔵 FOV: OFF", 150, 200, 130, Color3.fromRGB(60,60,70))
 
-local parts = {"Head", "HumanoidRootPart"}
+local parts = {"Head", "Root"}
 local currentPart = 1
 
 partBtn.MouseButton1Click:Connect(function()
     currentPart = currentPart % #parts + 1
-    SelectedPart = parts[currentPart]
-    partBtn.Text = SelectedPart
+    SelectedPart = currentPart == 1 and "Head" or "HumanoidRootPart"
+    partBtn.Text = SelectedPart == "Head" and "Head" or "Root"
 end)
-
--- FOV TOGGLE
-local fovToggle = createModernButton(AimTab, "🔵 EXIBIR FOV: OFF", yPos, Color3.fromRGB(60,60,70))
-yPos = yPos + 45
 
 -- FOV CIRCLE
 local FOV = Instance.new("Frame")
@@ -422,40 +388,49 @@ addCorner(FOV, 75)
 fovToggle.MouseButton1Click:Connect(function()
     FOVVisible = not FOVVisible
     FOV.Visible = FOVVisible
-    fovToggle.Text = FOVVisible and "🔵 EXIBIR FOV: ON" or "🔵 EXIBIR FOV: OFF"
+    fovToggle.Text = FOVVisible and "🔵 FOV: ON" or "🔵 FOV: OFF"
     fovToggle.BackgroundColor3 = FOVVisible and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- FOV SLIDER (LIMITADO A 250)
-createSlider(AimTab, "FOV SIZE", yPos, 50, 250, 150, function(val)
+-- FOV SLIDER
+createSlider(AimTab, "FOV SIZE", 10, 240, 50, 250, 150, function(val)
     FOVSize = val
     FOV.Size = UDim2.new(0,val,0,val)
     FOV.Position = UDim2.new(0.5,-val/2,0.5,-val/2)
 end)
-yPos = yPos + 70
 
--- LEGIT MODE SLIDER
-createSlider(AimTab, "SMOOTHNESS", yPos, 0.1, 1, 0.3, function(val)
+-- SMOOTHNESS SLIDER
+createSlider(AimTab, "SMOOTHNESS", 10, 300, 0.1, 1, 0.3, function(val)
     Smoothness = val
 end)
 
--- ==================== ABA VISUAL ====================
-local vYPos = 10
+-- AIM MODE SWITCH
+legitBtn.MouseButton1Click:Connect(function()
+    AimMode = "Legit"
+    legitBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
+    rageBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
+end)
 
+rageBtn.MouseButton1Click:Connect(function()
+    AimMode = "Rage"
+    rageBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
+    legitBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
+end)
+
+-- ==================== ABA VISUAL ====================
 local visualTitle = Instance.new("TextLabel")
 visualTitle.Parent = VisualTab
 visualTitle.Size = UDim2.new(1,0,0,30)
-visualTitle.Position = UDim2.new(0,0,0,vYPos)
-visualTitle.Text = "👁️ ESP CONFIG"
+visualTitle.Position = UDim2.new(0,10,0,10)
+visualTitle.Text = "👁️ ESP CONFIGURATIONS"
 visualTitle.TextColor3 = MainColor
 visualTitle.BackgroundTransparency = 1
 visualTitle.Font = Enum.Font.GothamBold
-visualTitle.TextSize = 16
-vYPos = vYPos + 40
+visualTitle.TextSize = 18
+visualTitle.TextXAlignment = Enum.TextXAlignment.Left
 
--- ESP TOGGLE
-local espToggle = createModernButton(VisualTab, "🔄 ESP: OFF", vYPos, Color3.fromRGB(60,60,70))
-vYPos = vYPos + 45
+-- ESP TOGGLE (Linha 1)
+local espToggle = createButton(VisualTab, "🔄 ESP: OFF", 10, 50, 270, Color3.fromRGB(60,60,70))
 
 espToggle.MouseButton1Click:Connect(function()
     ESPEnabled = not ESPEnabled
@@ -469,10 +444,11 @@ espToggle.MouseButton1Click:Connect(function()
     end
 end)
 
--- BOX TOGGLE
-local boxToggle = createModernButton(VisualTab, "📦 BOX: ON", vYPos, Color3.fromRGB(0,150,0))
-vYPos = vYPos + 45
+-- BOX + NAME (Linha 2)
+local boxToggle = createButton(VisualTab, "📦 BOX: ON", 10, 100, 130, Color3.fromRGB(0,150,0))
+local nameToggle = createButton(VisualTab, "🏷️ NAME: ON", 150, 100, 130, Color3.fromRGB(0,150,0))
 local BoxEnabled = true
+local NameEnabled = true
 
 boxToggle.MouseButton1Click:Connect(function()
     BoxEnabled = not BoxEnabled
@@ -480,21 +456,17 @@ boxToggle.MouseButton1Click:Connect(function()
     boxToggle.BackgroundColor3 = BoxEnabled and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- NAME TOGGLE
-local nameToggle = createModernButton(VisualTab, "🏷️ NAME: ON", vYPos, Color3.fromRGB(0,150,0))
-vYPos = vYPos + 45
-local NameEnabled = true
-
 nameToggle.MouseButton1Click:Connect(function()
     NameEnabled = not NameEnabled
     nameToggle.Text = NameEnabled and "🏷️ NAME: ON" or "🏷️ NAME: OFF"
     nameToggle.BackgroundColor3 = NameEnabled and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- HEALTH TOGGLE
-local healthToggle = createModernButton(VisualTab, "❤️ HEALTH: ON", vYPos, Color3.fromRGB(0,150,0))
-vYPos = vYPos + 45
+-- HEALTH + DISTANCE (Linha 3)
+local healthToggle = createButton(VisualTab, "❤️ HEALTH: ON", 10, 150, 130, Color3.fromRGB(0,150,0))
+local distToggle = createButton(VisualTab, "📏 DIST: ON", 150, 150, 130, Color3.fromRGB(0,150,0))
 local HealthEnabled = true
+local DistEnabled = true
 
 healthToggle.MouseButton1Click:Connect(function()
     HealthEnabled = not HealthEnabled
@@ -502,20 +474,14 @@ healthToggle.MouseButton1Click:Connect(function()
     healthToggle.BackgroundColor3 = HealthEnabled and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- DISTANCE TOGGLE
-local distToggle = createModernButton(VisualTab, "📏 DISTANCE: ON", vYPos, Color3.fromRGB(0,150,0))
-vYPos = vYPos + 45
-local DistEnabled = true
-
 distToggle.MouseButton1Click:Connect(function()
     DistEnabled = not DistEnabled
-    distToggle.Text = DistEnabled and "📏 DISTANCE: ON" or "📏 DISTANCE: OFF"
+    distToggle.Text = DistEnabled and "📏 DIST: ON" or "📏 DIST: OFF"
     distToggle.BackgroundColor3 = DistEnabled and Color3.fromRGB(0,150,0) or Color3.fromRGB(60,60,70)
 end)
 
--- SKELETON TOGGLE
-local skeletonToggle = createModernButton(VisualTab, "🦴 SKELETON: OFF", vYPos, Color3.fromRGB(60,60,70))
-vYPos = vYPos + 45
+-- SKELETON TOGGLE (Linha 4)
+local skeletonToggle = createButton(VisualTab, "🦴 SKELETON: OFF", 10, 200, 270, Color3.fromRGB(60,60,70))
 local SkeletonEnabled = false
 
 skeletonToggle.MouseButton1Click:Connect(function()
@@ -525,46 +491,34 @@ skeletonToggle.MouseButton1Click:Connect(function()
 end)
 
 -- ==================== ABA SETTINGS ====================
-local sYPos = 10
-
 local settingsTitle = Instance.new("TextLabel")
 settingsTitle.Parent = SettingsTab
 settingsTitle.Size = UDim2.new(1,0,0,30)
-settingsTitle.Position = UDim2.new(0,0,0,sYPos)
+settingsTitle.Position = UDim2.new(0,10,0,10)
 settingsTitle.Text = "⚙️ CONFIGURAÇÕES"
 settingsTitle.TextColor3 = MainColor
 settingsTitle.BackgroundTransparency = 1
 settingsTitle.Font = Enum.Font.GothamBold
-settingsTitle.TextSize = 16
-sYPos = sYPos + 40
+settingsTitle.TextSize = 18
+settingsTitle.TextXAlignment = Enum.TextXAlignment.Left
 
 -- COR DO PAINEL
-local colorLabel = Instance.new("TextLabel")
-colorLabel.Parent = SettingsTab
-colorLabel.Size = UDim2.new(0,60,0,25)
-colorLabel.Position = UDim2.new(0,15,0,sYPos)
-colorLabel.Text = "COR:"
-colorLabel.TextColor3 = Color3.new(1,1,1)
-colorLabel.BackgroundTransparency = 1
-
 local colorDisplay = Instance.new("Frame")
 colorDisplay.Parent = SettingsTab
-colorDisplay.Size = UDim2.new(0,25,0,25)
-colorDisplay.Position = UDim2.new(0,70,0,sYPos)
+colorDisplay.Size = UDim2.new(0,40,0,40)
+colorDisplay.Position = UDim2.new(0,10,0,50)
 colorDisplay.BackgroundColor3 = MainColor
-addCorner(colorDisplay, 6)
+addCorner(colorDisplay, 8)
+addStroke(colorDisplay, 2, Color3.new(1,1,1))
 
-local colorBtn = createModernButton(SettingsTab, "MUDAR", sYPos, Color3.fromRGB(60,60,70))
-colorBtn.Size = UDim2.new(0,100,0,25)
-colorBtn.Position = UDim2.new(0,105,0,sYPos)
+local colorBtn = createButton(SettingsTab, "MUDAR COR", 60, 50, 150, Color3.fromRGB(60,60,70))
 
 local colors = {
-    Color3.fromRGB(220, 40, 80),
-    Color3.fromRGB(0, 120, 255),
-    Color3.fromRGB(50, 200, 50),
-    Color3.fromRGB(255, 140, 0),
-    Color3.fromRGB(180, 0, 255),
-    Color3.fromRGB(255, 255, 255)
+    Color3.fromRGB(0, 100, 255),  -- Azul Forte (principal)
+    Color3.fromRGB(220, 40, 80),  -- Rosa
+    Color3.fromRGB(50, 200, 50),  -- Verde
+    Color3.fromRGB(255, 140, 0),  -- Laranja
+    Color3.fromRGB(180, 0, 255)   -- Roxo
 }
 local colorIndex = 1
 
@@ -632,30 +586,15 @@ RunService.RenderStepped:Connect(function()
                 local camPos = Camera.CFrame.Position
                 
                 if AimMode == "Legit" then
-                    -- LEGIT MODE: Smooth aim
                     local direction = (targetPos - camPos).Unit
                     local newCF = CFrame.lookAt(camPos, camPos + direction)
                     Camera.CFrame = Camera.CFrame:Lerp(newCF, Smoothness)
                 else
-                    -- RAGE MODE: Instant aim
                     Camera.CFrame = CFrame.lookAt(camPos, targetPos)
                 end
             end
         end
     end
-end)
-
--- AIM MODE SWITCH
-legitBtn.MouseButton1Click:Connect(function()
-    AimMode = "Legit"
-    legitBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
-    rageBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
-end)
-
-rageBtn.MouseButton1Click:Connect(function()
-    AimMode = "Rage"
-    rageBtn.BackgroundColor3 = Color3.fromRGB(0,150,0)
-    legitBtn.BackgroundColor3 = Color3.fromRGB(150,0,0)
 end)
 
 -- ==================== FUNÇÕES DO ESP ====================
@@ -697,13 +636,13 @@ local function CreateESPForPlayer(player)
     esp.Distance.Outline = true
     esp.Distance.Color = Color3.new(1,1,1)
     
-    -- Skeleton (6 linhas)
-    for i = 1, 6 do
+    -- Skeleton (15 linhas para esqueleto completo)
+    for i = 1, 15 do
         local line = Drawing.new("Line")
         line.Visible = false
         line.Thickness = 2
         line.Color = MainColor
-        line.Transparency = 0.7
+        line.Transparency = 0.5
         table.insert(esp.Skeleton, line)
     end
     
@@ -731,74 +670,94 @@ local function ClearAllESP()
     ESPObjects = {}
 end
 
--- FUNÇÃO PARA DESENHAR ESQUELETO
+-- FUNÇÃO PARA DESENHAR ESQUELETO COMPLETO
 local function DrawSkeleton(player)
     local char = player.Character
     if not char then return end
     
-    -- Tenta encontrar as partes do corpo (R6 ou R15)
-    local head = char:FindFirstChild("Head")
-    local torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso")
-    local leftArm = char:FindFirstChild("Left Arm") or char:FindFirstChild("LeftHand")
-    local rightArm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightHand")
-    local leftLeg = char:FindFirstChild("Left Leg") or char:FindFirstChild("LeftFoot")
-    local rightLeg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightFoot")
-    
-    -- Verifica se tem as partes principais
-    if not head or not torso then return end
-    
     local esp = ESPObjects[player]
     if not esp then return end
     
-    -- Obtém posições na tela
-    local headPos, headVis = Camera:WorldToViewportPoint(head.Position)
-    local torsoPos, torsoVis = Camera:WorldToViewportPoint(torso.Position)
+    -- Mapeamento de partes do corpo (R6 e R15)
+    local parts = {
+        Head = char:FindFirstChild("Head"),
+        Neck = char:FindFirstChild("Neck") or char:FindFirstChild("Head"),
+        
+        Torso = char:FindFirstChild("Torso") or char:FindFirstChild("UpperTorso"),
+        Waist = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("LowerTorso"),
+        
+        LeftArm = char:FindFirstChild("Left Arm") or char:FindFirstChild("LeftUpperArm"),
+        LeftForearm = char:FindFirstChild("LeftForearm") or char:FindFirstChild("LeftLowerArm"),
+        LeftHand = char:FindFirstChild("LeftHand") or char:FindFirstChild("Left Arm"),
+        
+        RightArm = char:FindFirstChild("Right Arm") or char:FindFirstChild("RightUpperArm"),
+        RightForearm = char:FindFirstChild("RightForearm") or char:FindFirstChild("RightLowerArm"),
+        RightHand = char:FindFirstChild("RightHand") or char:FindFirstChild("Right Arm"),
+        
+        LeftLeg = char:FindFirstChild("Left Leg") or char:FindFirstChild("LeftUpperLeg"),
+        LeftCalf = char:FindFirstChild("LeftCalf") or char:FindFirstChild("LeftLowerLeg"),
+        LeftFoot = char:FindFirstChild("LeftFoot") or char:FindFirstChild("Left Leg"),
+        
+        RightLeg = char:FindFirstChild("Right Leg") or char:FindFirstChild("RightUpperLeg"),
+        RightCalf = char:FindFirstChild("RightCalf") or char:FindFirstChild("RightLowerLeg"),
+        RightFoot = char:FindFirstChild("RightFoot") or char:FindFirstChild("Right Leg")
+    }
     
-    if not headVis or not torsoVis then 
+    -- Verifica se tem as partes principais
+    if not parts.Head or not parts.Torso then return end
+    
+    -- Obtém posições na tela
+    local positions = {}
+    local allVisible = true
+    
+    for name, part in pairs(parts) do
+        if part then
+            local pos, vis = Camera:WorldToViewportPoint(part.Position)
+            positions[name] = pos
+            if not vis then allVisible = false end
+        end
+    end
+    
+    if not allVisible then
         for _, line in ipairs(esp.Skeleton) do
             line.Visible = false
         end
-        return 
+        return
     end
     
-    -- Array de conexões do esqueleto
+    -- Conexões do esqueleto (15 linhas)
     local connections = {
-        {headPos, torsoPos} -- Cabeça ao tronco
+        -- Cabeça e pescoço
+        {positions.Head, positions.Neck},
+        {positions.Neck, positions.Torso},
+        
+        -- Coluna
+        {positions.Torso, positions.Waist},
+        
+        -- Braço esquerdo
+        {positions.Torso, positions.LeftArm},
+        {positions.LeftArm, positions.LeftForearm or positions.LeftArm},
+        {positions.LeftForearm or positions.LeftArm, positions.LeftHand},
+        
+        -- Braço direito
+        {positions.Torso, positions.RightArm},
+        {positions.RightArm, positions.RightForearm or positions.RightArm},
+        {positions.RightForearm or positions.RightArm, positions.RightHand},
+        
+        -- Perna esquerda
+        {positions.Waist, positions.LeftLeg},
+        {positions.LeftLeg, positions.LeftCalf or positions.LeftLeg},
+        {positions.LeftCalf or positions.LeftLeg, positions.LeftFoot},
+        
+        -- Perna direita
+        {positions.Waist, positions.RightLeg},
+        {positions.RightLeg, positions.RightCalf or positions.RightLeg},
+        {positions.RightCalf or positions.RightLeg, positions.RightFoot}
     }
-    
-    -- Adiciona braços se existirem
-    if leftArm then
-        local armPos, armVis = Camera:WorldToViewportPoint(leftArm.Position)
-        if armVis then
-            table.insert(connections, {torsoPos, armPos})
-        end
-    end
-    
-    if rightArm then
-        local armPos, armVis = Camera:WorldToViewportPoint(rightArm.Position)
-        if armVis then
-            table.insert(connections, {torsoPos, armPos})
-        end
-    end
-    
-    -- Adiciona pernas se existirem
-    if leftLeg then
-        local legPos, legVis = Camera:WorldToViewportPoint(leftLeg.Position)
-        if legVis then
-            table.insert(connections, {torsoPos, legPos})
-        end
-    end
-    
-    if rightLeg then
-        local legPos, legVis = Camera:WorldToViewportPoint(rightLeg.Position)
-        if legVis then
-            table.insert(connections, {torsoPos, legPos})
-        end
-    end
     
     -- Desenha as linhas
     for i, connection in ipairs(connections) do
-        if i <= #esp.Skeleton then
+        if i <= #esp.Skeleton and connection[1] and connection[2] then
             esp.Skeleton[i].From = Vector2.new(connection[1].X, connection[1].Y)
             esp.Skeleton[i].To = Vector2.new(connection[2].X, connection[2].Y)
             esp.Skeleton[i].Visible = true
@@ -839,23 +798,20 @@ RunService.RenderStepped:Connect(function()
                 local headPos, headOnScreen = Camera:WorldToViewportPoint(head.Position)
                 
                 if rootOnScreen and headOnScreen then
-                    -- Calcula tamanho do box baseado na distância
+                    -- Calcula tamanho do box
                     local distance = (root.Position - Camera.CFrame.Position).Magnitude
-                    local boxHeight = math.clamp(5000 / distance, 40, 150)
-                    local boxWidth = boxHeight * 0.6
+                    local boxHeight = math.clamp(5500 / distance, 45, 180)
+                    local boxWidth = boxHeight * 0.55
                     
-                    -- Posiciona o box corretamente (dos pés à cabeça)
-                    local footY = rootPos.Y + (boxHeight / 2)
-                    local boxPos = Vector2.new(
-                        rootPos.X - boxWidth/2,
-                        headPos.Y - boxHeight - 10
-                    )
+                    -- POSIÇÃO CORRETA DO BOX (dos pés à cabeça)
+                    local boxY = headPos.Y - boxHeight - 5
+                    local boxX = rootPos.X - boxWidth/2
                     
-                    -- BOX - CORRIGIDO: agora fica ao redor do corpo
+                    -- BOX - CORRIGIDA: agora fica ao redor do corpo
                     if BoxEnabled then
                         esp.Box.Visible = true
                         esp.Box.Size = Vector2.new(boxWidth, boxHeight)
-                        esp.Box.Position = boxPos
+                        esp.Box.Position = Vector2.new(boxX, boxY)
                         esp.Box.Color = MainColor
                     else
                         esp.Box.Visible = false
@@ -865,7 +821,7 @@ RunService.RenderStepped:Connect(function()
                     if NameEnabled then
                         esp.Name.Visible = true
                         esp.Name.Text = player.Name
-                        esp.Name.Position = Vector2.new(rootPos.X, boxPos.Y - 20)
+                        esp.Name.Position = Vector2.new(rootPos.X, boxY - 18)
                     else
                         esp.Name.Visible = false
                     end
@@ -874,8 +830,8 @@ RunService.RenderStepped:Connect(function()
                     if HealthEnabled then
                         local healthPercent = hum.Health / hum.MaxHealth
                         esp.Health.Visible = true
-                        esp.Health.Text = string.format("%.0f/%.0f", hum.Health, hum.MaxHealth)
-                        esp.Health.Position = Vector2.new(rootPos.X, boxPos.Y + boxHeight + 5)
+                        esp.Health.Text = string.format("%.0f HP", hum.Health)
+                        esp.Health.Position = Vector2.new(rootPos.X, boxY + boxHeight + 5)
                         esp.Health.Color = Color3.new(1 - healthPercent, healthPercent, 0)
                     else
                         esp.Health.Visible = false
@@ -885,7 +841,7 @@ RunService.RenderStepped:Connect(function()
                     if DistEnabled then
                         esp.Distance.Visible = true
                         esp.Distance.Text = math.floor(distance) .. "m"
-                        esp.Distance.Position = Vector2.new(rootPos.X, boxPos.Y + boxHeight + 25)
+                        esp.Distance.Position = Vector2.new(rootPos.X, boxY + boxHeight + 23)
                     else
                         esp.Distance.Visible = false
                     end
@@ -946,4 +902,4 @@ end)
 -- CRIAR ESP INICIAL
 CreateESPForAll()
 
-print("✅ EDSON SCRIPT V4 CARREGADO COM SUCESSO!")
+print("✅ EDSON SCRIPT V5 CARREGADO - COR AZUL FORTE | ESP DETALHADO")
