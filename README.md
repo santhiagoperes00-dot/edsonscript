@@ -1,5 +1,5 @@
--- EDSON MODZ V7 - RAGE RAINBOW EDITION (29KB+ FULL VERSION)
--- DESIGN PREMIUM SEMI-TRANSPARENTE | RAGE AIMBOT INSTANT | FOV SYNC WITH ESP | RAINBOW MIRROR NAME | CROSS WALL | SPEED HACK
+-- EDSON MODZ V7 - MOBILE SUPERHERO EDITION (29KB+ FULL VERSION)
+-- DESIGN ULTRA-COMPACTO | FLY HACK (SUPERHERO) | MOBILE OPTIMIZED | RAINBOW MIRROR NAME | CROSS WALL | SPEED HACK
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -17,17 +17,20 @@ ScreenGui.DisplayOrder = 999
 -- ==================== CONFIGURAÇÕES GLOBAIS ====================
 local Config = {
     AimEnabled = false,
-    AimMode = "Legit", -- Opções: "Legit", "Rage"
+    AimMode = "Legit",
     TeamCheck = false,
     VisibleCheck = true,
     SelectedPart = "Head",
-    Smoothness = 0.3,
+    Smoothness = 3, -- Valor padrão de delay/suavidade
     FOVSize = 150,
     FOVVisible = false,
     
     WalkSpeed = 16,
     SpeedEnabled = false,
     CrossWall = false,
+    
+    FlyEnabled = false, -- NOVO: FLY HACK
+    FlySpeed = 50,
     
     ESPEnabled = false,
     BoxEnabled = false,
@@ -53,8 +56,8 @@ local Colors = {
 
 local ESPObjects = {}
 local Minimized = false
-local MainSize = UDim2.new(0, 600, 0, 520)
-local MinSize = UDim2.new(0, 250, 0, 60)
+local MainSize = UDim2.new(0, 500, 0, 380) -- PAINEL MAIS COMPACTO
+local MinSize = UDim2.new(0, 220, 0, 55)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
 local function addCorner(obj, radius)
@@ -98,12 +101,12 @@ end
 -- ==================== INTERFACE PREMIUM SEMI-TRANSPARENTE ====================
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = MainSize
-Main.Position = UDim2.new(0.5, -300, 0.5, -260)
+Main.Position = UDim2.new(0.5, -250, 0.5, -190)
 Main.BackgroundColor3 = Colors.Background
 Main.BackgroundTransparency = 0.15
 Main.Active = true
 Main.Draggable = true
-addCorner(Main, 20)
+addCorner(Main, 18)
 addStroke(Main, 2, Colors.Primary)
 
 -- Efeito de brilho nas bordas
@@ -111,7 +114,7 @@ local GlowBorder = Instance.new("Frame", Main)
 GlowBorder.Size = UDim2.new(1, 4, 1, 4)
 GlowBorder.Position = UDim2.new(0, -2, 0, -2)
 GlowBorder.BackgroundTransparency = 1
-addCorner(GlowBorder, 22)
+addCorner(GlowBorder, 20)
 local glowStroke = Instance.new("UIStroke")
 glowStroke.Thickness = 2
 glowStroke.Color = Colors.Accent
@@ -120,13 +123,13 @@ glowStroke.Parent = GlowBorder
 
 -- BOTÃO DE NOME (RAINBOW & CENTRALIZADO AO MINIMIZAR)
 local UserBtn = Instance.new("TextButton", Main)
-UserBtn.Size = UDim2.new(1, -40, 0, 50)
+UserBtn.Size = UDim2.new(1, -40, 0, 45)
 UserBtn.Position = UDim2.new(0, 20, 0, 5)
 UserBtn.Text = "EDSON MODZ"
 UserBtn.BackgroundTransparency = 1
 UserBtn.TextColor3 = Color3.new(1, 1, 1)
 UserBtn.Font = Enum.Font.GothamBold
-UserBtn.TextSize = 26
+UserBtn.TextSize = 22
 UserBtn.TextXAlignment = Enum.TextXAlignment.Left
 
 -- Efeito Rainbow Espelhado no Nome
@@ -168,33 +171,32 @@ UserBtn.MouseButton1Click:Connect(function()
     end
 end)
 
--- SIDE MENU PREMIUM
+-- SIDE MENU PREMIUM (COMPACTO)
 local Side = Instance.new("Frame", Main)
 Side.Name = "Side"
-Side.Size = UDim2.new(0, 160, 1, -70)
-Side.Position = UDim2.new(0, 10, 0, 60)
+Side.Size = UDim2.new(0, 130, 1, -60)
+Side.Position = UDim2.new(0, 10, 0, 50)
 Side.BackgroundColor3 = Colors.Surface
 Side.BackgroundTransparency = 0.3
 Side.BorderSizePixel = 0
-addCorner(Side, 16)
+addCorner(Side, 14)
 addGradient(Side, Colors.Surface, Color3.fromRGB(28, 32, 42), 180)
 
 -- CONTENT AREA
 local Content = Instance.new("Frame", Main)
 Content.Name = "Content"
-Content.Position = UDim2.new(0, 180, 0, 60)
-Content.Size = UDim2.new(1, -190, 1, -70)
+Content.Position = UDim2.new(0, 150, 0, 50)
+Content.Size = UDim2.new(1, -160, 1, -60)
 Content.BackgroundTransparency = 1
-addCorner(Content, 16)
+addCorner(Content, 14)
 
--- ABAS
+-- ABAS (SEM SCROLL DUPLICADO)
 local function createTab(parent)
     local tab = Instance.new("ScrollingFrame", parent)
     tab.Size = UDim2.new(1, 0, 1, 0)
     tab.BackgroundTransparency = 1
-    tab.ScrollBarThickness = 4
-    tab.ScrollBarImageColor3 = Colors.Primary
-    tab.CanvasSize = UDim2.new(0, 0, 0, 1000)
+    tab.ScrollBarThickness = 0 -- REMOVIDO SCROLL VISÍVEL PARA LIMPEZA
+    tab.CanvasSize = UDim2.new(0, 0, 0, 800)
     tab.BorderSizePixel = 0
     tab.Visible = false
     return tab
@@ -203,60 +205,51 @@ end
 local AimTab = createTab(Content); AimTab.Visible = true
 local VisualTab = createTab(Content)
 local MiscTab = createTab(Content)
-local SettingsTab = createTab(Content)
 
 -- BOTÕES DE ABA ULTRA-FLUIDOS
 local function createNavButton(text, icon, pos, tab)
     local btn = Instance.new("TextButton", Side)
-    btn.Size = UDim2.new(1, -20, 0, 60)
-    btn.Position = UDim2.new(0, 10, 0, pos)
+    btn.Size = UDim2.new(1, -16, 0, 50)
+    btn.Position = UDim2.new(0, 8, 0, pos)
     btn.Text = icon .. "  " .. text
     btn.Font = Enum.Font.GothamBold
-    btn.TextSize = 16
+    btn.TextSize = 14
     btn.TextColor3 = Colors.Text
     btn.BackgroundColor3 = Colors.SurfaceLight
     btn.BackgroundTransparency = 0.5
     btn.BorderSizePixel = 0
-    addCorner(btn, 14)
+    addCorner(btn, 12)
     addStroke(btn, 1, Colors.Primary, 0.7)
     
-    btn.MouseEnter:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundTransparency = 0.2, BackgroundColor3 = Colors.Primary}):Play()
-    end)
-    btn.MouseLeave:Connect(function()
-        TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundTransparency = 0.5, BackgroundColor3 = Colors.SurfaceLight}):Play()
-    end)
-    
     btn.MouseButton1Click:Connect(function()
-        AimTab.Visible = false; VisualTab.Visible = false; MiscTab.Visible = false; SettingsTab.Visible = false
+        AimTab.Visible = false; VisualTab.Visible = false; MiscTab.Visible = false
         tab.Visible = true
     end)
     return btn
 end
 
-createNavButton("AIMBOT", "🎯", 15, AimTab)
-createNavButton("VISUAL", "👁️", 85, VisualTab)
-createNavButton("MISC", "🚀", 155, MiscTab)
-createNavButton("SETTINGS", "⚙️", 225, SettingsTab)
+createNavButton("AIMBOT", "🎯", 10, AimTab)
+createNavButton("VISUAL", "👁️", 70, VisualTab)
+createNavButton("MISC", "🚀", 130, MiscTab)
 
--- ==================== COMPONENTES PREMIUM (29KB+ FULL) ====================
+-- ==================== COMPONENTES PREMIUM (MOBILE OPTIMIZED) ====================
 local function createSection(parent, title, yPos, height)
     local section = Instance.new("Frame", parent)
-    section.Size = UDim2.new(1, -10, 0, height or 140)
+    section.Size = UDim2.new(1, -10, 0, height or 120)
     section.Position = UDim2.new(0, 5, 0, yPos)
     section.BackgroundColor3 = Colors.Surface
     section.BackgroundTransparency = 0.4
     section.BorderSizePixel = 0
-    addCorner(section, 16)
+    addCorner(section, 14)
     addStroke(section, 1, Colors.Primary, 0.8)
     
     local sectionTitle = Instance.new("TextLabel", section)
-    sectionTitle.Size = UDim2.new(1, -20, 0, 30)
+    sectionTitle.Size = UDim2.new(1, -20, 0, 25)
     sectionTitle.Position = UDim2.new(0, 10, 0, 5)
     sectionTitle.Text = title
     sectionTitle.TextColor3 = Colors.Accent
     sectionTitle.Font = Enum.Font.GothamBold
-    sectionTitle.TextSize = 14
+    sectionTitle.TextSize = 12
     sectionTitle.BackgroundTransparency = 1
     sectionTitle.TextXAlignment = Enum.TextXAlignment.Left
     return section
@@ -264,79 +257,79 @@ end
 
 local function createToggle(parent, text, x, y, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0, 160, 0, 40)
+    btn.Size = UDim2.new(0, 140, 0, 35)
     btn.Position = UDim2.new(0, x, 0, y)
     btn.Font = Enum.Font.GothamBold
     btn.TextColor3 = Colors.Text
-    btn.TextSize = 12
-    addCorner(btn, 12)
+    btn.TextSize = 11
+    addCorner(btn, 10)
     
     local function update()
         local is_on = Config[key]
         btn.Text = text .. ": " .. (is_on and "ON" or "OFF")
         TweenService:Create(btn, TweenInfo.new(0.4), {BackgroundColor3 = is_on and Colors.Success or Colors.Danger, BackgroundTransparency = 0.2}):Play()
     end
-    btn.MouseButton1Click:Connect(function() Config[key] = not Config[key]; update() end)
+    btn.MouseButton1Connect = btn.MouseButton1Click:Connect(function() Config[key] = not Config[key]; update() end)
     update()
 end
 
 local function createSlider(parent, label, x, y, min, max, default, key)
     local frame = Instance.new("Frame", parent)
-    frame.Size = UDim2.new(0, 350, 0, 60)
+    frame.Size = UDim2.new(0, 300, 0, 55)
     frame.Position = UDim2.new(0, x, 0, y)
     frame.BackgroundTransparency = 1
     
     local lbl = Instance.new("TextLabel", frame)
-    lbl.Size = UDim2.new(1, 0, 0, 20); lbl.Text = label .. ": " .. default; lbl.TextColor3 = Colors.Text; lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.Gotham; lbl.TextSize = 12; lbl.TextXAlignment = Enum.TextXAlignment.Left
+    lbl.Size = UDim2.new(1, 0, 0, 20); lbl.Text = label .. ": " .. default; lbl.TextColor3 = Colors.Text; lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.Gotham; lbl.TextSize = 11; lbl.TextXAlignment = Enum.TextXAlignment.Left
     
-    local slider = Instance.new("Frame", frame); slider.Size = UDim2.new(1, 0, 0, 8); slider.Position = UDim2.new(0, 0, 0, 35); slider.BackgroundColor3 = Colors.Surface; addCorner(slider, 4)
+    local slider = Instance.new("Frame", frame); slider.Size = UDim2.new(1, 0, 0, 8); slider.Position = UDim2.new(0, 0, 0, 32); slider.BackgroundColor3 = Colors.Surface; addCorner(slider, 4)
     local fill = Instance.new("Frame", slider); fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Colors.Primary; addCorner(fill, 4)
-    local knob = Instance.new("Frame", slider); knob.Size = UDim2.new(0, 18, 0, 18); knob.Position = UDim2.new(fill.Size.X.Scale, -9, -0.5, 0); knob.BackgroundColor3 = Colors.Text; addCorner(knob, 9)
+    local knob = Instance.new("Frame", slider); knob.Size = UDim2.new(0, 20, 0, 20); knob.Position = UDim2.new(fill.Size.X.Scale, -10, -0.5, 0); knob.BackgroundColor3 = Colors.Text; addCorner(knob, 10)
     
     local dragging = false
-    knob.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end end)
-    UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = false end end)
-    UIS.InputChanged:Connect(function(i)
-        if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
-            local pos = math.clamp((i.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
-            fill.Size = UDim2.new(pos, 0, 1, 0); knob.Position = UDim2.new(pos, -9, -0.5, 0)
-            local val = math.floor(min + (pos * (max - min))); lbl.Text = label .. ": " .. val; Config[key] = val
-        end
-    end)
+    local function updateSlider(input)
+        local pos = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
+        fill.Size = UDim2.new(pos, 0, 1, 0); knob.Position = UDim2.new(pos, -10, -0.5, 0)
+        local val = math.floor(min + (pos * (max - min))); lbl.Text = label .. ": " .. val; Config[key] = val
+    end
+    
+    knob.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = true end end)
+    UIS.InputEnded:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then dragging = false end end)
+    UIS.InputChanged:Connect(function(i) if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then updateSlider(i) end end)
 end
 
--- ==================== CONTEÚDO DAS ABAS (29KB+ FULL) ====================
+-- ==================== CONTEÚDO DAS ABAS (ULTRA-COMPACTO) ====================
 -- AIM TAB
 local aY = 10
-local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 160); aY = aY + 170
-createToggle(aimSec1, "AIMBOT", 10, 45, "AimEnabled")
-createToggle(aimSec1, "TEAM CHECK", 180, 45, "TeamCheck")
-createToggle(aimSec1, "VIS CHECK", 10, 100, "VisibleCheck")
+local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 140); aY = aY + 150
+createToggle(aimSec1, "AIMBOT", 10, 40, "AimEnabled")
+createToggle(aimSec1, "TEAM CHECK", 160, 40, "TeamCheck")
+createToggle(aimSec1, "VIS CHECK", 10, 85, "VisibleCheck")
 
 local ModeBtn = Instance.new("TextButton", aimSec1)
-ModeBtn.Size = UDim2.new(0, 160, 0, 40); ModeBtn.Position = UDim2.new(0, 180, 0, 100); ModeBtn.Font = Enum.Font.GothamBold; ModeBtn.TextColor3 = Colors.Text; ModeBtn.TextSize = 12; addCorner(ModeBtn, 12)
+ModeBtn.Size = UDim2.new(0, 140, 0, 35); ModeBtn.Position = UDim2.new(0, 160, 0, 85); ModeBtn.Font = Enum.Font.GothamBold; ModeBtn.TextColor3 = Colors.Text; ModeBtn.TextSize = 11; addCorner(ModeBtn, 10)
 local function updateMode() ModeBtn.Text = "MODE: " .. Config.AimMode:upper(); ModeBtn.BackgroundColor3 = Config.AimMode == "Rage" and Colors.Danger or Colors.Primary; ModeBtn.BackgroundTransparency = 0.2 end
 ModeBtn.MouseButton1Click:Connect(function() Config.AimMode = Config.AimMode == "Legit" and "Rage" or "Legit"; updateMode() end)
 updateMode()
 
-local aimSec2 = createSection(AimTab, "AIMBOT SETTINGS", aY, 220); aY = aY + 230
-createSlider(aimSec2, "FOV SIZE", 10, 45, 10, 600, 150, "FOVSize")
-createSlider(aimSec2, "SMOOTHNESS", 10, 115, 1, 10, 3, "Smoothness")
-createToggle(aimSec2, "SHOW FOV", 10, 165, "FOVVisible")
+local aimSec2 = createSection(AimTab, "AIMBOT SETTINGS", aY, 180); aY = aY + 190
+createSlider(aimSec2, "FOV SIZE", 10, 40, 10, 600, 150, "FOVSize")
+createSlider(aimSec2, "DELAY (SMOOTH)", 10, 100, 1, 10, 3, "Smoothness")
+createToggle(aimSec2, "SHOW FOV", 10, 140, "FOVVisible")
 
 -- VISUAL TAB
 local vY = 10
-local visSec1 = createSection(VisualTab, "ESP MASTER", vY, 100); vY = vY + 110
-createToggle(visSec1, "MASTER ESP", 10, 45, "ESPEnabled")
+local visSec1 = createSection(VisualTab, "ESP MASTER", vY, 80); vY = vY + 90
+createToggle(visSec1, "MASTER ESP", 10, 35, "ESPEnabled")
 
-local visSec2 = createSection(VisualTab, "ESP ELEMENTS", vY, 260); vY = vY + 270
-createToggle(visSec2, "BOX", 10, 45, "BoxEnabled")
-createToggle(visSec2, "NAME", 180, 45, "NameEnabled")
-createToggle(visSec2, "HEALTH", 10, 100, "HealthEnabled")
-createToggle(visSec2, "LINE", 180, 100, "LineEnabled")
+local visSec2 = createSection(VisualTab, "ESP ELEMENTS", vY, 220); vY = vY + 230
+createToggle(visSec2, "BOX", 10, 40, "BoxEnabled")
+createToggle(visSec2, "NAME", 160, 40, "NameEnabled")
+createToggle(visSec2, "HEALTH", 10, 85, "HealthEnabled")
+createToggle(visSec2, "LINE", 160, 85, "LineEnabled")
 
 local LineOriginBtn = Instance.new("TextButton", visSec2)
-LineOriginBtn.Size = UDim2.new(0, 330, 0, 40); LineOriginBtn.Position = UDim2.new(0, 10, 0, 155); LineOriginBtn.Text = "LINE ORIGIN: BOTTOM"; LineOriginBtn.Font = Enum.Font.GothamBold; LineOriginBtn.TextColor3 = Colors.Text; LineOriginBtn.BackgroundColor3 = Colors.SurfaceLight; LineOriginBtn.BackgroundTransparency = 0.4; addCorner(LineOriginBtn, 12)
+LineOriginBtn.Size = UDim2.new(0, 290, 0, 35); LineOriginBtn.Position = UDim2.new(0, 10, 0, 130); LineOriginBtn.Text = "LINE ORIGIN: BOTTOM"; LineOriginBtn.Font = Enum.Font.GothamBold; LineOriginBtn.TextColor3 = Colors.Text; LineOriginBtn.BackgroundColor3 = Colors.SurfaceLight; LineOriginBtn.BackgroundTransparency = 0.4; addCorner(LineOriginBtn, 10)
 LineOriginBtn.MouseButton1Click:Connect(function()
     if Config.LineOrigin == "Bottom" then Config.LineOrigin = "Center" elseif Config.LineOrigin == "Center" then Config.LineOrigin = "Top" else Config.LineOrigin = "Bottom" end
     LineOriginBtn.Text = "LINE ORIGIN: " .. Config.LineOrigin:upper()
@@ -344,19 +337,12 @@ end)
 
 -- MISC TAB
 local mY = 10
-local miscSec1 = createSection(MiscTab, "CHARACTER MODS", mY, 180); mY = mY + 190
-createToggle(miscSec1, "SPEED HACK", 10, 45, "SpeedEnabled")
-createSlider(miscSec1, "WALK SPEED", 10, 100, 16, 300, 16, "WalkSpeed")
-createToggle(miscSec1, "CROSS WALL", 180, 45, "CrossWall")
-
--- SETTINGS TAB (COLOR PICKER)
-local sY = 10
-local setSec1 = createSection(SettingsTab, "THEME SETTINGS", sY, 120); sY = sY + 130
-local colorColors = {Colors.Primary, Color3.fromRGB(0, 150, 255), Color3.fromRGB(46, 204, 113), Color3.fromRGB(255, 100, 100), Color3.fromRGB(255, 170, 50)}
-for i, color in ipairs(colorColors) do
-    local cBtn = Instance.new("TextButton", setSec1); cBtn.Size = UDim2.new(0, 60, 0, 50); cBtn.Position = UDim2.new(0, 10 + (i-1)*70, 0, 45); cBtn.Text = ""; cBtn.BackgroundColor3 = color; addCorner(cBtn, 14)
-    cBtn.MouseButton1Click:Connect(function() Colors.Primary = color; glowStroke.Color = color:Lerp(Color3.new(1,1,1), 0.5) end)
-end
+local miscSec1 = createSection(MiscTab, "CHARACTER MODS", mY, 220); mY = mY + 230
+createToggle(miscSec1, "SPEED HACK", 10, 40, "SpeedEnabled")
+createSlider(miscSec1, "WALK SPEED", 10, 85, 16, 300, 16, "WalkSpeed")
+createToggle(miscSec1, "CROSS WALL", 160, 40, "CrossWall")
+createToggle(miscSec1, "FLY HACK", 10, 145, "FlyEnabled")
+createSlider(miscSec1, "FLY SPEED", 10, 185, 10, 200, 50, "FlySpeed")
 
 -- ==================== LÓGICA DO ESP SIMPLIFICADO ====================
 local function CreateESP(player)
@@ -375,13 +361,52 @@ local function ClearESP(player)
     end
 end
 
+-- ==================== LÓGICA DO FLY HACK (SUPERHERO) ====================
+local flyBodyVelocity, flyBodyGyro
+RunService.Heartbeat:Connect(function()
+    if Config.FlyEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local root = LocalPlayer.Character.HumanoidRootPart
+        local hum = LocalPlayer.Character.Humanoid
+        
+        if not flyBodyVelocity then
+            flyBodyVelocity = Instance.new("BodyVelocity", root)
+            flyBodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            flyBodyGyro = Instance.new("BodyGyro", root)
+            flyBodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
+            flyBodyGyro.P = 9000
+            hum.PlatformStand = true
+        end
+        
+        local moveDir = hum.MoveDirection
+        local cameraCF = Camera.CFrame
+        local flyDir = Vector3.new(0,0,0)
+        
+        if moveDir.Magnitude > 0 then
+            flyDir = (cameraCF.LookVector * moveDir.Z + cameraCF.RightVector * moveDir.X).Unit * Config.FlySpeed
+            flyBodyGyro.CFrame = CFrame.new(root.Position, root.Position + cameraCF.LookVector) * CFrame.Angles(math.rad(-90), 0, 0) -- ANIMAÇÃO SUPERHERO
+        else
+            flyBodyGyro.CFrame = CFrame.new(root.Position, root.Position + cameraCF.LookVector)
+        end
+        
+        flyBodyVelocity.Velocity = flyDir
+    else
+        if flyBodyVelocity then
+            flyBodyVelocity:Destroy(); flyBodyVelocity = nil
+            flyBodyGyro:Destroy(); flyBodyGyro = nil
+            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+                LocalPlayer.Character.Humanoid.PlatformStand = false
+            end
+        end
+    end
+end)
+
 -- ==================== LOOP PRINCIPAL ====================
 local FOV = Drawing.new("Circle"); FOV.Thickness = 2; FOV.NumSides = 60; FOV.Filled = false; FOV.Transparency = 0.4
 
 RunService.RenderStepped:Connect(function()
-    -- FOV SYNC WITH ESP
-    if Config.ESPEnabled then
-        FOV.Visible = Config.FOVVisible
+    -- FOV SYNC WITH ESP & VISIBILITY FIX
+    if Config.ESPEnabled and Config.FOVVisible then
+        FOV.Visible = true
     else
         FOV.Visible = false
     end
@@ -441,25 +466,21 @@ RunService.RenderStepped:Connect(function()
                 if part then
                     local pos, vis = Camera:WorldToViewportPoint(part.Position)
                     local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
-                    if dist < shortest then 
-                        if Config.VisibleCheck and not IsPlayerVisible(p) then continue end
-                        shortest = dist; target = p 
-                    end
+                    if dist < shortest then if Config.VisibleCheck and not IsPlayerVisible(p) then continue end; shortest = dist; target = p end
                 end
             end
         end
         if target then
             local part = target.Character[Config.SelectedPart]
-            
-            -- RAGE MODE: INSTANT SNAP | LEGIT MODE: SMOOTH LERP
             if Config.AimMode == "Rage" then
                 Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
             else
-                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), Config.Smoothness)
+                -- SUAVIDADE AJUSTADA PARA MOBILE (VALOR MAIOR = MAIS LENTO)
+                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), 1 / (Config.Smoothness * 5))
             end
         end
     end
 end)
 
 Players.PlayerRemoving:Connect(ClearESP)
-print("✅ EDSON MODZ V7 RAGE RAINBOW EDITION CARREGADO - 29KB+")
+print("✅ EDSON MODZ V7 MOBILE SUPERHERO EDITION CARREGADO - 29KB+")
