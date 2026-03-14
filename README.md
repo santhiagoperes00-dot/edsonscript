@@ -1,5 +1,5 @@
--- EDSON MODZ V7 - ULTIMATE PROFESSIONAL EDITION (29KB+ FULL VERSION)
--- DESIGN PREMIUM SEMI-TRANSPARENTE | CROSS WALL | AIM MAGNET | SPEED HACK | TEXTOS BRANCOS | ESP SIMPLIFICADO
+-- EDSON MODZ V7 - ULTIMATE PROFESSIONAL DEFINITIVO (29KB+ FULL VERSION)
+-- DESIGN PREMIUM SEMI-TRANSPARENTE | AIM MAGNET (WALL PULL) | CROSS WALL | SPEED HACK | TEXTOS BRANCOS | ESP SIMPLIFICADO
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -54,8 +54,8 @@ local Colors = {
 
 local ESPObjects = {}
 local Minimized = false
-local MainSize = UDim2.new(0, 550, 0, 480)
-local MinSize = UDim2.new(0, 550, 0, 60)
+local MainSize = UDim2.new(0, 600, 0, 520)
+local MinSize = UDim2.new(0, 200, 0, 50)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
 local function addCorner(obj, radius)
@@ -99,9 +99,9 @@ end
 -- ==================== INTERFACE PREMIUM SEMI-TRANSPARENTE ====================
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = MainSize
-Main.Position = UDim2.new(0.5, -275, 0.5, -240)
+Main.Position = UDim2.new(0.5, -300, 0.5, -260)
 Main.BackgroundColor3 = Colors.Background
-Main.BackgroundTransparency = 0.15 -- FUNDO MEIO TRANSPARENTE
+Main.BackgroundTransparency = 0.15
 Main.Active = true
 Main.Draggable = true
 addCorner(Main, 20)
@@ -119,37 +119,35 @@ glowStroke.Color = Colors.Accent
 glowStroke.Transparency = 0.8
 glowStroke.Parent = GlowBorder
 
--- TOP BAR DISCRETA (APENAS NOME)
-local Top = Instance.new("Frame", Main)
-Top.Size = UDim2.new(1, 0, 0, 60)
-Top.BackgroundTransparency = 1
-Top.BorderSizePixel = 0
+-- BOTÃO DE NOME (ABRE/FECHA O PAINEL)
+local UserBtn = Instance.new("TextButton", Main)
+UserBtn.Size = UDim2.new(0, 200, 0, 50)
+UserBtn.Position = UDim2.new(0, 10, 0, 5)
+UserBtn.Text = "EDSON MODZ"
+UserBtn.BackgroundTransparency = 1
+UserBtn.TextColor3 = Colors.Text
+UserBtn.Font = Enum.Font.GothamBold
+UserBtn.TextSize = 24
+UserBtn.TextXAlignment = Enum.TextXAlignment.Left
 
-local UserLabel = Instance.new("TextLabel", Top)
-UserLabel.Size = UDim2.new(1, -100, 1, 0)
-UserLabel.Position = UDim2.new(0, 20, 0, 0)
-UserLabel.Text = "EDSON MODZ"
-UserLabel.BackgroundTransparency = 1
-UserLabel.TextColor3 = Colors.Text
-UserLabel.Font = Enum.Font.GothamBold
-UserLabel.TextSize = 24
-UserLabel.TextXAlignment = Enum.TextXAlignment.Left
-
-local CloseBtn = Instance.new("TextButton", Top)
-CloseBtn.Size = UDim2.new(0, 35, 0, 35)
-CloseBtn.Position = UDim2.new(1, -45, 0.5, -17.5)
-CloseBtn.Text = "✕"
-CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.TextSize = 18
-CloseBtn.TextColor3 = Colors.Text
-CloseBtn.BackgroundColor3 = Colors.Danger
-CloseBtn.BackgroundTransparency = 0.2
-addCorner(CloseBtn, 10)
-CloseBtn.MouseButton1Click:Connect(function() ScreenGui:Destroy() end)
+UserBtn.MouseButton1Click:Connect(function()
+    Minimized = not Minimized
+    if Minimized then
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = MinSize}):Play()
+        Main:FindFirstChild("Side").Visible = false
+        Main:FindFirstChild("Content").Visible = false
+    else
+        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = MainSize}):Play()
+        wait(0.2)
+        Main:FindFirstChild("Side").Visible = true
+        Main:FindFirstChild("Content").Visible = true
+    end
+end)
 
 -- SIDE MENU PREMIUM
 local Side = Instance.new("Frame", Main)
-Side.Size = UDim2.new(0, 150, 1, -70)
+Side.Name = "Side"
+Side.Size = UDim2.new(0, 160, 1, -70)
 Side.Position = UDim2.new(0, 10, 0, 60)
 Side.BackgroundColor3 = Colors.Surface
 Side.BackgroundTransparency = 0.3
@@ -159,8 +157,9 @@ addGradient(Side, Colors.Surface, Color3.fromRGB(28, 32, 42), 180)
 
 -- CONTENT AREA
 local Content = Instance.new("Frame", Main)
-Content.Position = UDim2.new(0, 170, 0, 60)
-Content.Size = UDim2.new(1, -180, 1, -70)
+Content.Name = "Content"
+Content.Position = UDim2.new(0, 180, 0, 60)
+Content.Size = UDim2.new(1, -190, 1, -70)
 Content.BackgroundTransparency = 1
 addCorner(Content, 16)
 
@@ -171,7 +170,7 @@ local function createTab(parent)
     tab.BackgroundTransparency = 1
     tab.ScrollBarThickness = 4
     tab.ScrollBarImageColor3 = Colors.Primary
-    tab.CanvasSize = UDim2.new(0, 0, 0, 900)
+    tab.CanvasSize = UDim2.new(0, 0, 0, 1000)
     tab.BorderSizePixel = 0
     tab.Visible = false
     return tab
@@ -185,7 +184,7 @@ local SettingsTab = createTab(Content)
 -- BOTÕES DE ABA ULTRA-FLUIDOS
 local function createNavButton(text, icon, pos, tab)
     local btn = Instance.new("TextButton", Side)
-    btn.Size = UDim2.new(1, -20, 0, 55)
+    btn.Size = UDim2.new(1, -20, 0, 60)
     btn.Position = UDim2.new(0, 10, 0, pos)
     btn.Text = icon .. "  " .. text
     btn.Font = Enum.Font.GothamBold
@@ -194,7 +193,7 @@ local function createNavButton(text, icon, pos, tab)
     btn.BackgroundColor3 = Colors.SurfaceLight
     btn.BackgroundTransparency = 0.5
     btn.BorderSizePixel = 0
-    addCorner(btn, 12)
+    addCorner(btn, 14)
     addStroke(btn, 1, Colors.Primary, 0.7)
     
     btn.MouseEnter:Connect(function()
@@ -212,11 +211,11 @@ local function createNavButton(text, icon, pos, tab)
 end
 
 createNavButton("AIMBOT", "🎯", 15, AimTab)
-createNavButton("VISUAL", "👁️", 80, VisualTab)
-createNavButton("MISC", "🚀", 145, MiscTab)
-createNavButton("SETTINGS", "⚙️", 210, SettingsTab)
+createNavButton("VISUAL", "👁️", 85, VisualTab)
+createNavButton("MISC", "🚀", 155, MiscTab)
+createNavButton("SETTINGS", "⚙️", 225, SettingsTab)
 
--- ==================== COMPONENTES PREMIUM (29KB+ STYLE) ====================
+-- ==================== COMPONENTES PREMIUM (29KB+ FULL) ====================
 local function createSection(parent, title, yPos, height)
     local section = Instance.new("Frame", parent)
     section.Size = UDim2.new(1, -10, 0, height or 140)
@@ -241,12 +240,12 @@ end
 
 local function createToggle(parent, text, x, y, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0, 150, 0, 38)
+    btn.Size = UDim2.new(0, 160, 0, 40)
     btn.Position = UDim2.new(0, x, 0, y)
     btn.Font = Enum.Font.GothamBold
     btn.TextColor3 = Colors.Text
     btn.TextSize = 12
-    addCorner(btn, 10)
+    addCorner(btn, 12)
     
     local function update()
         local is_on = Config[key]
@@ -259,16 +258,16 @@ end
 
 local function createSlider(parent, label, x, y, min, max, default, key)
     local frame = Instance.new("Frame", parent)
-    frame.Size = UDim2.new(0, 320, 0, 55)
+    frame.Size = UDim2.new(0, 350, 0, 60)
     frame.Position = UDim2.new(0, x, 0, y)
     frame.BackgroundTransparency = 1
     
     local lbl = Instance.new("TextLabel", frame)
     lbl.Size = UDim2.new(1, 0, 0, 20); lbl.Text = label .. ": " .. default; lbl.TextColor3 = Colors.Text; lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.Gotham; lbl.TextSize = 12; lbl.TextXAlignment = Enum.TextXAlignment.Left
     
-    local slider = Instance.new("Frame", frame); slider.Size = UDim2.new(1, 0, 0, 6); slider.Position = UDim2.new(0, 0, 0, 32); slider.BackgroundColor3 = Colors.Surface; addCorner(slider, 3)
-    local fill = Instance.new("Frame", slider); fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Colors.Primary; addCorner(fill, 3)
-    local knob = Instance.new("Frame", slider); knob.Size = UDim2.new(0, 16, 0, 16); knob.Position = UDim2.new(fill.Size.X.Scale, -8, -0.5, 0); knob.BackgroundColor3 = Colors.Text; addCorner(knob, 8)
+    local slider = Instance.new("Frame", frame); slider.Size = UDim2.new(1, 0, 0, 8); slider.Position = UDim2.new(0, 0, 0, 35); slider.BackgroundColor3 = Colors.Surface; addCorner(slider, 4)
+    local fill = Instance.new("Frame", slider); fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Colors.Primary; addCorner(fill, 4)
+    local knob = Instance.new("Frame", slider); knob.Size = UDim2.new(0, 18, 0, 18); knob.Position = UDim2.new(fill.Size.X.Scale, -9, -0.5, 0); knob.BackgroundColor3 = Colors.Text; addCorner(knob, 9)
     
     local dragging = false
     knob.InputBegan:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseButton1 then dragging = true end end)
@@ -276,7 +275,7 @@ local function createSlider(parent, label, x, y, min, max, default, key)
     UIS.InputChanged:Connect(function(i)
         if dragging and i.UserInputType == Enum.UserInputType.MouseMovement then
             local pos = math.clamp((i.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
-            fill.Size = UDim2.new(pos, 0, 1, 0); knob.Position = UDim2.new(pos, -8, -0.5, 0)
+            fill.Size = UDim2.new(pos, 0, 1, 0); knob.Position = UDim2.new(pos, -9, -0.5, 0)
             local val = math.floor(min + (pos * (max - min))); lbl.Text = label .. ": " .. val; Config[key] = val
         end
     end)
@@ -285,30 +284,30 @@ end
 -- ==================== CONTEÚDO DAS ABAS (29KB+ FULL) ====================
 -- AIM TAB
 local aY = 10
-local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 150); aY = aY + 160
+local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 160); aY = aY + 170
 createToggle(aimSec1, "AIMBOT", 10, 45, "AimEnabled")
-createToggle(aimSec1, "AIM MAGNET", 170, 45, "AimMagnet")
-createToggle(aimSec1, "TEAM CHECK", 10, 95, "TeamCheck")
-createToggle(aimSec1, "VIS CHECK", 170, 95, "VisibleCheck")
+createToggle(aimSec1, "AIM MAGNET", 180, 45, "AimMagnet")
+createToggle(aimSec1, "TEAM CHECK", 10, 100, "TeamCheck")
+createToggle(aimSec1, "VIS CHECK", 180, 100, "VisibleCheck")
 
-local aimSec2 = createSection(AimTab, "AIMBOT SETTINGS", aY, 200); aY = aY + 210
+local aimSec2 = createSection(AimTab, "AIMBOT SETTINGS", aY, 220); aY = aY + 230
 createSlider(aimSec2, "FOV SIZE", 10, 45, 10, 600, 150, "FOVSize")
-createSlider(aimSec2, "SMOOTHNESS", 10, 110, 1, 10, 3, "Smoothness")
-createToggle(aimSec2, "SHOW FOV", 10, 150, "FOVVisible")
+createSlider(aimSec2, "SMOOTHNESS", 10, 115, 1, 10, 3, "Smoothness")
+createToggle(aimSec2, "SHOW FOV", 10, 165, "FOVVisible")
 
 -- VISUAL TAB
 local vY = 10
-local visSec1 = createSection(VisualTab, "ESP MASTER", vY, 90); vY = vY + 100
+local visSec1 = createSection(VisualTab, "ESP MASTER", vY, 100); vY = vY + 110
 createToggle(visSec1, "MASTER ESP", 10, 45, "ESPEnabled")
 
-local visSec2 = createSection(VisualTab, "ESP ELEMENTS", vY, 240); vY = vY + 250
+local visSec2 = createSection(VisualTab, "ESP ELEMENTS", vY, 260); vY = vY + 270
 createToggle(visSec2, "BOX", 10, 45, "BoxEnabled")
-createToggle(visSec2, "NAME", 170, 45, "NameEnabled")
-createToggle(visSec2, "HEALTH", 10, 95, "HealthEnabled")
-createToggle(visSec2, "LINE", 170, 95, "LineEnabled")
+createToggle(visSec2, "NAME", 180, 45, "NameEnabled")
+createToggle(visSec2, "HEALTH", 10, 100, "HealthEnabled")
+createToggle(visSec2, "LINE", 180, 100, "LineEnabled")
 
 local LineOriginBtn = Instance.new("TextButton", visSec2)
-LineOriginBtn.Size = UDim2.new(0, 310, 0, 35); LineOriginBtn.Position = UDim2.new(0, 10, 0, 145); LineOriginBtn.Text = "LINE ORIGIN: BOTTOM"; LineOriginBtn.Font = Enum.Font.GothamBold; LineOriginBtn.TextColor3 = Colors.Text; LineOriginBtn.BackgroundColor3 = Colors.SurfaceLight; LineOriginBtn.BackgroundTransparency = 0.4; addCorner(LineOriginBtn, 10)
+LineOriginBtn.Size = UDim2.new(0, 330, 0, 40); LineOriginBtn.Position = UDim2.new(0, 10, 0, 155); LineOriginBtn.Text = "LINE ORIGIN: BOTTOM"; LineOriginBtn.Font = Enum.Font.GothamBold; LineOriginBtn.TextColor3 = Colors.Text; LineOriginBtn.BackgroundColor3 = Colors.SurfaceLight; LineOriginBtn.BackgroundTransparency = 0.4; addCorner(LineOriginBtn, 12)
 LineOriginBtn.MouseButton1Click:Connect(function()
     if Config.LineOrigin == "Bottom" then Config.LineOrigin = "Center" elseif Config.LineOrigin == "Center" then Config.LineOrigin = "Top" else Config.LineOrigin = "Bottom" end
     LineOriginBtn.Text = "LINE ORIGIN: " .. Config.LineOrigin:upper()
@@ -316,17 +315,17 @@ end)
 
 -- MISC TAB
 local mY = 10
-local miscSec1 = createSection(MiscTab, "CHARACTER MODS", mY, 160); mY = mY + 170
+local miscSec1 = createSection(MiscTab, "CHARACTER MODS", mY, 180); mY = mY + 190
 createToggle(miscSec1, "SPEED HACK", 10, 45, "SpeedEnabled")
-createSlider(miscSec1, "WALK SPEED", 10, 95, 16, 300, 16, "WalkSpeed")
-createToggle(miscSec1, "CROSS WALL", 170, 45, "CrossWall")
+createSlider(miscSec1, "WALK SPEED", 10, 100, 16, 300, 16, "WalkSpeed")
+createToggle(miscSec1, "CROSS WALL", 180, 45, "CrossWall")
 
 -- SETTINGS TAB (COLOR PICKER)
 local sY = 10
-local setSec1 = createSection(SettingsTab, "THEME SETTINGS", sY, 110); sY = sY + 120
+local setSec1 = createSection(SettingsTab, "THEME SETTINGS", sY, 120); sY = sY + 130
 local colorColors = {Colors.Primary, Color3.fromRGB(0, 150, 255), Color3.fromRGB(46, 204, 113), Color3.fromRGB(255, 100, 100), Color3.fromRGB(255, 170, 50)}
 for i, color in ipairs(colorColors) do
-    local cBtn = Instance.new("TextButton", setSec1); cBtn.Size = UDim2.new(0, 55, 0, 45); cBtn.Position = UDim2.new(0, 10 + (i-1)*65, 0, 45); cBtn.Text = ""; cBtn.BackgroundColor3 = color; addCorner(cBtn, 12)
+    local cBtn = Instance.new("TextButton", setSec1); cBtn.Size = UDim2.new(0, 60, 0, 50); cBtn.Position = UDim2.new(0, 10 + (i-1)*70, 0, 45); cBtn.Text = ""; cBtn.BackgroundColor3 = color; addCorner(cBtn, 14)
     cBtn.MouseButton1Click:Connect(function() Colors.Primary = color; glowStroke.Color = color:Lerp(Color3.new(1,1,1), 0.5) end)
 end
 
@@ -355,8 +354,12 @@ RunService.RenderStepped:Connect(function()
 
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         if Config.SpeedEnabled then LocalPlayer.Character.Humanoid.WalkSpeed = Config.WalkSpeed else LocalPlayer.Character.Humanoid.WalkSpeed = 16 end
+        
+        -- CROSS WALL (NOCLIP)
         if Config.CrossWall then
-            for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
+            for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
+                if part:IsA("BasePart") then part.CanCollide = false end
+            end
         end
     end
 
@@ -406,17 +409,30 @@ RunService.RenderStepped:Connect(function()
                 if part then
                     local pos, vis = Camera:WorldToViewportPoint(part.Position)
                     local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
-                    if dist < shortest then if Config.VisibleCheck and not IsPlayerVisible(p) and not Config.AimMagnet then continue end; shortest = dist; target = p end
+                    if dist < shortest then 
+                        if Config.VisibleCheck and not IsPlayerVisible(p) and not Config.AimMagnet then continue end
+                        shortest = dist; target = p 
+                    end
                 end
             end
         end
         if target then
             local part = target.Character[Config.SelectedPart]
-            if Config.AimMagnet then Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), 0.5)
-            else Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), Config.Smoothness) end
+            
+            -- AIM MAGNET (WALL PULL LOGIC)
+            if Config.AimMagnet then
+                local targetPos = part.Position
+                -- Se o alvo estiver atrás de parede, "puxa" a posição visualmente
+                if not IsPlayerVisible(target) then
+                    targetPos = targetPos + Vector3.new(0, 5, 0) -- Puxa para cima para tentar expor
+                end
+                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, targetPos), 0.5)
+            else
+                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), Config.Smoothness)
+            end
         end
     end
 end)
 
 Players.PlayerRemoving:Connect(ClearESP)
-print("✅ EDSON MODZ V7 ULTIMATE PROFESSIONAL COMPLETO - 29KB+")
+print("✅ EDSON MODZ V7 ULTIMATE PROFESSIONAL DEFINITIVO CARREGADO - 29KB+")
