@@ -1,8 +1,12 @@
 -- ============================================================
--- EDSON MODZ V8 - ULTIMATE MULTI-PLATFORM EDITION
--- AIMBOT UNIVERSAL (FIXED) | SKELETON ESP | REALISTIC BOX
--- RAINBOW MIRROR NAME | PC & MOBILE OPTIMIZED
+-- EDSON MODZ V8 - FINAL FIXED EDITION (PC & MOBILE)
+-- AIMBOT UNIVERSAL | SKELETON ESP | REALISTIC BOX & HEALTH
+-- RAINBOW MIRROR NAME | CENTRALIZED FOV | FIXED EXECUTION
 -- ============================================================
+
+-- Proteção para múltiplos carregamentos
+if _G.EdsonModzLoaded then return end
+_G.EdsonModzLoaded = true
 
 local TweenService    = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -10,13 +14,6 @@ local Players         = game:GetService("Players")
 local RunService      = game:GetService("RunService")
 local Camera          = workspace.CurrentCamera
 local LocalPlayer     = Players.LocalPlayer
-
--- ==================== SCREENUI PRINCIPAL ====================
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.CoreGui
-ScreenGui.ResetOnSpawn = false
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.DisplayOrder = 999
 
 -- ==================== CONFIGURAÇÕES GLOBAIS ====================
 local Config = {
@@ -73,6 +70,13 @@ local function addStroke(obj, thickness, color, transparency)
     s.Parent = obj
 end
 
+-- ==================== SCREENUI PRINCIPAL ====================
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "EdsonModzV8"
+ScreenGui.Parent = (game:GetService("CoreGui") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"))
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
 -- ==================== TELA DE SELEÇÃO DE PLATAFORMA ====================
 local SelectFrame = Instance.new("Frame", ScreenGui)
 SelectFrame.Size = UDim2.new(0, 400, 0, 250)
@@ -111,7 +115,7 @@ local function createSelectBtn(text, icon, pos, platform)
             Config.FOVSize = 120
         end
         SelectFrame:Destroy()
-        _G.StartMainScript()
+        task.spawn(function() _G.RunMainScript() end)
     end)
 end
 
@@ -119,7 +123,7 @@ createSelectBtn("PC / DESKTOP", "💻", UDim2.new(0, 30, 0, 80), "PC")
 createSelectBtn("MOBILE / CELULAR", "📱", UDim2.new(0, 210, 0, 80), "Mobile")
 
 -- ==================== SCRIPT PRINCIPAL ====================
-_G.StartMainScript = function()
+_G.RunMainScript = function()
     local MainSize = Config.Platform == "Mobile" and UDim2.new(0, 480, 0, 380) or UDim2.new(0, 560, 0, 460)
     local MainPos = UDim2.new(0.5, -MainSize.X.Offset/2, 0.5, -MainSize.Y.Offset/2)
     
@@ -371,6 +375,7 @@ _G.StartMainScript = function()
     -- ==================== LÓGICA DO ESP ====================
     local ESPObjects = {}
     local function createESP(p)
+        if ESPObjects[p] then return end
         local esp = {
             Box = {Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line")},
             Skeleton = {},
@@ -380,22 +385,13 @@ _G.StartMainScript = function()
             Line = Drawing.new("Line")
         }
         
-        -- Config Name
         esp.Name.Size = 14; esp.Name.Center = true; esp.Name.Outline = true; esp.Name.Color = Config.NameColor
-        
-        -- Config Line
         esp.Line.Thickness = 1.5; esp.Line.Color = Config.BoxColor
-        
-        -- Config Box
         for _, v in pairs(esp.Box) do v.Thickness = 1.5; v.Color = Config.BoxColor; v.Visible = false end
-        
-        -- Config Health
         esp.Health.Filled = true; esp.Health.Color = Color3.fromRGB(0, 0, 0); esp.Health.Transparency = 0.5
         esp.HealthBar.Filled = true; esp.HealthBar.Color = Colors.Success
         
-        -- Config Skeleton (R15/R6)
-        local bones = 10
-        for i=1, bones do
+        for i=1, 10 do
             local line = Drawing.new("Line")
             line.Thickness = 2; line.Color = Config.SkeletonColor; line.Visible = false
             table.insert(esp.Skeleton, line)
@@ -442,7 +438,6 @@ _G.StartMainScript = function()
                     local h = math.abs(headPos.Y - legPos.Y)
                     local w = h * 0.6
                     
-                    -- BOX
                     if Config.BoxEnabled then
                         local left, top = pos.X - w/2, pos.Y - h/2
                         esp.Box[1].Visible = true; esp.Box[1].From = Vector2.new(left, top); esp.Box[1].To = Vector2.new(left + w, top)
@@ -453,12 +448,10 @@ _G.StartMainScript = function()
                         for _, v in pairs(esp.Box) do v.Visible = false end
                     end
 
-                    -- NAME
                     if Config.NameEnabled then
                         esp.Name.Visible = true; esp.Name.Position = Vector2.new(pos.X, pos.Y - h/2 - 15); esp.Name.Text = p.Name
                     else esp.Name.Visible = false end
 
-                    -- HEALTH
                     if Config.HealthEnabled then
                         local barH = h * (char.Humanoid.Health / char.Humanoid.MaxHealth)
                         esp.Health.Visible = true; esp.Health.Position = Vector2.new(pos.X - w/2 - 6, pos.Y - h/2); esp.Health.Size = Vector2.new(4, h)
@@ -466,12 +459,10 @@ _G.StartMainScript = function()
                         esp.HealthBar.Color = Color3.fromHSV(char.Humanoid.Health/100 * 0.3, 1, 1)
                     else esp.Health.Visible = false; esp.HealthBar.Visible = false end
 
-                    -- LINE
                     if Config.LineEnabled then
                         esp.Line.Visible = true; esp.Line.From = center; esp.Line.To = Vector2.new(pos.X, pos.Y + h/2)
                     else esp.Line.Visible = false end
 
-                    -- SKELETON (Simplificado para estabilidade)
                     if Config.SkeletonEnabled then
                         local parts = {
                             char:FindFirstChild("Head"), char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso"),
@@ -503,9 +494,8 @@ _G.StartMainScript = function()
             end
         end
 
-        -- SPEED
-        if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
-            LocalPlayer.Character.Humanoid.WalkSpeed = Config.SpeedEnabled and Config.WalkSpeed or 16
+        if Config.SpeedEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
+            LocalPlayer.Character.Humanoid.WalkSpeed = Config.WalkSpeed
         end
     end)
 
@@ -513,3 +503,7 @@ _G.StartMainScript = function()
     for _, p in ipairs(Players:GetPlayers()) do if p ~= LocalPlayer then createESP(p) end end
     Players.PlayerRemoving:Connect(function(p) if ESPObjects[p] then for _, v in pairs(ESPObjects[p]) do if type(v) == "table" then for _, x in pairs(v) do x:Remove() end else v:Remove() end end ESPObjects[p] = nil end end)
 }
+
+-- Inicialização segura
+task.wait(0.1)
+-- O script agora aguarda a seleção da plataforma para iniciar a lógica principal.
