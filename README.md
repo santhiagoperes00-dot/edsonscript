@@ -1,5 +1,5 @@
 -- EDSON SCRIPT V6 - PROFESSIONAL ULTIMATE EDITION
--- DESIGN PREMIUM | LAYOUT CORRIGIDO | ELEMENTOS ORGANIZADOS
+-- DESIGN PREMIUM | LAYOUT CORRIGIDO | ESP LINHA ADICIONADO
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -31,6 +31,7 @@ local Config = {
     HealthEnabled = false,
     DistEnabled = false,
     SkeletonEnabled = false,
+    LineEnabled = false, -- NOVA OPÇÃO: ESP LINHA
 }
 
 -- PALETA DE CORES PROFISSIONAL
@@ -49,7 +50,7 @@ local Colors = {
 
 local ESPObjects = {}
 local Minimized = false
-local MainSize = UDim2.new(0, 600, 0, 480)
+local MainSize = UDim2.new(0, 600, 0, 520) -- Aumentado para acomodar nova opção
 local MinSize = UDim2.new(0, 600, 0, 50)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
@@ -96,7 +97,7 @@ end
 -- ==================== INTERFACE PREMIUM ====================
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = MainSize
-Main.Position = UDim2.new(0.5, -300, 0.5, -240)
+Main.Position = UDim2.new(0.5, -300, 0.5, -260)
 Main.BackgroundColor3 = Colors.Background
 Main.BackgroundTransparency = 0.05
 Main.Active = true
@@ -213,7 +214,7 @@ local function createTab(parent)
     tab.BackgroundTransparency = 1
     tab.ScrollBarThickness = 4
     tab.ScrollBarImageColor3 = Colors.Primary
-    tab.CanvasSize = UDim2.new(0, 0, 0, 800)
+    tab.CanvasSize = UDim2.new(0, 0, 0, 850)
     tab.BorderSizePixel = 0
     tab.ScrollingEnabled = true
     tab.ScrollBarImageTransparency = 0.5
@@ -325,7 +326,7 @@ local function createSection(parent, title, yPos, height)
     return section
 end
 
--- FUNÇÃO TOGGLE PADRÃO (MESMO TAMANHO)
+-- FUNÇÃO TOGGLE PADRÃO
 local function createToggle(parent, text, x, y, key)
     local btn = Instance.new("TextButton", parent)
     btn.Size = UDim2.new(0, 140, 0, 35)
@@ -507,14 +508,15 @@ vYPos = vYPos + 100
 createToggle(visSection1, "MASTER ESP", 10, 45, "ESPEnabled")
 
 -- Seção 2: Elementos ESP
-local visSection2 = createSection(VisualTab, "ESP ELEMENTS", vYPos, 170)
-vYPos = vYPos + 180
+local visSection2 = createSection(VisualTab, "ESP ELEMENTS", vYPos, 210) -- Aumentado para 210px
+vYPos = vYPos + 220
 
 createToggle(visSection2, "BOX", 10, 45, "BoxEnabled")
 createToggle(visSection2, "NAME", 160, 45, "NameEnabled")
 createToggle(visSection2, "HEALTH", 10, 85, "HealthEnabled")
 createToggle(visSection2, "DISTANCE", 160, 85, "DistEnabled")
 createToggle(visSection2, "SKELETON", 10, 125, "SkeletonEnabled")
+createToggle(visSection2, "LINE", 160, 125, "LineEnabled") -- NOVA OPÇÃO: ESP LINHA
 
 -- ==================== CONTEÚDO DA SETTINGS TAB ====================
 local sYPos = 10
@@ -579,25 +581,42 @@ local function CreateESP(player)
         Dist = Drawing.new("Text"),
         HealthBar = Drawing.new("Square"),
         HealthBarBack = Drawing.new("Square"),
+        Line = Drawing.new("Line"), -- NOVO: Linha ESP
         Skeleton = {},
         HeadCircle = Drawing.new("Circle")
     }
+    
+    -- Box
     esp.Box.Thickness = 2
     esp.Box.Filled = false
+    
+    -- Name
     esp.Name.Size = 14
     esp.Name.Center = true
     esp.Name.Outline = true
     esp.Name.Color = Colors.Text
+    
+    -- Distance
     esp.Dist.Size = 12
     esp.Dist.Center = true
     esp.Dist.Outline = true
     esp.Dist.Color = Colors.TextDim
+    
+    -- Health
     esp.HealthBar.Filled = true
     esp.HealthBarBack.Filled = true
     esp.HealthBarBack.Color = Color3.new(0,0,0)
+    
+    -- Head Circle
     esp.HeadCircle.Thickness = 2
     esp.HeadCircle.Filled = false
     esp.HeadCircle.NumSides = 12
+    
+    -- LINE ESP (NOVO)
+    esp.Line.Thickness = 2
+    esp.Line.Color = Colors.Primary
+    esp.Line.Transparency = 0.3
+    
     ESPObjects[player] = esp
 end
 
@@ -689,6 +708,7 @@ RunService.RenderStepped:Connect(function()
                 local minX, minY = math.huge, math.huge
                 local maxX, maxY = -math.huge, -math.huge
                 local onScreen = false
+                local rootPart = char:FindFirstChild("HumanoidRootPart") or char:FindFirstChild("Head")
                 
                 for _, part in ipairs(char:GetChildren()) do
                     if part:IsA("BasePart") then
@@ -703,10 +723,11 @@ RunService.RenderStepped:Connect(function()
                     end
                 end
 
-                if onScreen then
+                if onScreen and rootPart then
                     local w, h = maxX - minX, maxY - minY
                     local color = IsPlayerVisible(player) and Colors.Success or Colors.Primary
                     
+                    -- BOX ESP
                     esp.Box.Visible = Config.BoxEnabled
                     if Config.BoxEnabled then
                         esp.Box.Size = Vector2.new(w, h)
@@ -714,6 +735,7 @@ RunService.RenderStepped:Connect(function()
                         esp.Box.Color = color
                     end
                     
+                    -- HEALTH BAR
                     esp.HealthBar.Visible = Config.HealthEnabled
                     esp.HealthBarBack.Visible = Config.HealthEnabled
                     if Config.HealthEnabled then
@@ -725,27 +747,52 @@ RunService.RenderStepped:Connect(function()
                         esp.HealthBar.Color = Color3.fromHSV(hp/3, 1, 1)
                     end
                     
+                    -- NAME ESP
                     esp.Name.Visible = Config.NameEnabled
                     if Config.NameEnabled then
                         esp.Name.Text = player.Name
                         esp.Name.Position = Vector2.new(minX + w/2, minY - 16)
                     end
                     
+                    -- DISTANCE ESP
                     esp.Dist.Visible = Config.DistEnabled
                     if Config.DistEnabled then
-                        local d = (Camera.CFrame.Position - char.HumanoidRootPart.Position).Magnitude
+                        local d = (Camera.CFrame.Position - rootPart.Position).Magnitude
                         esp.Dist.Text = math.floor(d) .. "m"
                         esp.Dist.Position = Vector2.new(minX + w/2, minY + h + 5)
                     end
                     
+                    -- SKELETON ESP
                     if Config.SkeletonEnabled then
                         DrawSkeleton(char, esp, color)
                     else
                         esp.HeadCircle.Visible = false
                         for _, l in ipairs(esp.Skeleton) do l.Visible = false end
                     end
+                    
+                    -- LINE ESP (NOVO)
+                    esp.Line.Visible = Config.LineEnabled
+                    if Config.LineEnabled then
+                        local rootPos, rootVis = Camera:WorldToViewportPoint(rootPart.Position)
+                        if rootVis then
+                            local screenCenter = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y)
+                            esp.Line.From = Vector2.new(rootPos.X, rootPos.Y)
+                            esp.Line.To = screenCenter
+                            esp.Line.Color = color
+                        else
+                            esp.Line.Visible = false
+                        end
+                    end
+                    
                 else
-                    ClearESP(player)
+                    esp.Box.Visible = false
+                    esp.Name.Visible = false
+                    esp.Dist.Visible = false
+                    esp.HealthBar.Visible = false
+                    esp.HealthBarBack.Visible = false
+                    esp.Line.Visible = false
+                    esp.HeadCircle.Visible = false
+                    for _, l in ipairs(esp.Skeleton) do l.Visible = false end
                 end
             elseif ESPObjects[player] then
                 ClearESP(player)
@@ -790,4 +837,5 @@ end)
 
 Players.PlayerRemoving:Connect(ClearESP)
 
-print("✅ EDSON SCRIPT V6 - LAYOUT CORRIGIDO E ORGANIZADO")
+print("✅ EDSON SCRIPT V6 - ESP LINHA ADICIONADO")
+print("✅ Agora com LINE ESP (linha do chão até o jogador)")
