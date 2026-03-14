@@ -1,5 +1,5 @@
--- EDSON MODZ V7 - ULTIMATE SUPERHERO EDITION (29KB+ FULL VERSION)
--- DESIGN PREMIUM SEMI-TRANSPARENTE | FLY HACK (SUPERHERO) | AIM MAGNET | CROSS WALL | SPEED HACK | RAINBOW MIRROR NAME | MOBILE OPTIMIZED
+-- EDSON MODZ V7 - ULTIMATE CLEAN EDITION (29KB+ FULL VERSION)
+-- LAYOUT ULTRA-ORGANIZADO | RAGE AIMBOT FIX | CROSS WALL | SPEED HACK | RAINBOW MIRROR NAME | MOBILE OPTIMIZED
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -17,8 +17,7 @@ ScreenGui.DisplayOrder = 999
 -- ==================== CONFIGURAÇÕES GLOBAIS ====================
 local Config = {
     AimEnabled = false,
-    AimMagnet = false, -- RESTAURADO: AIM MAGNET
-    AimMode = "Legit",
+    AimMode = "Legit", -- "Legit" ou "Rage"
     TeamCheck = false,
     VisibleCheck = true,
     SelectedPart = "Head",
@@ -28,10 +27,7 @@ local Config = {
     
     WalkSpeed = 16,
     SpeedEnabled = false,
-    CrossWall = false, -- RESTAURADO: CROSS WALL
-    
-    FlyEnabled = false, -- RESTAURADO: FLY HACK
-    FlySpeed = 50,
+    CrossWall = false,
     
     ESPEnabled = false,
     BoxEnabled = false,
@@ -57,7 +53,7 @@ local Colors = {
 
 local ESPObjects = {}
 local Minimized = false
-local MainSize = UDim2.new(0, 550, 0, 450)
+local MainSize = UDim2.new(0, 580, 0, 480)
 local MinSize = UDim2.new(0, 220, 0, 55)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
@@ -102,7 +98,7 @@ end
 -- ==================== INTERFACE PREMIUM SEMI-TRANSPARENTE ====================
 local Main = Instance.new("Frame", ScreenGui)
 Main.Size = MainSize
-Main.Position = UDim2.new(0.5, -275, 0.5, -225)
+Main.Position = UDim2.new(0.5, -290, 0.5, -240)
 Main.BackgroundColor3 = Colors.Background
 Main.BackgroundTransparency = 0.15
 Main.Active = true
@@ -175,7 +171,7 @@ end)
 -- SIDE MENU PREMIUM
 local Side = Instance.new("Frame", Main)
 Side.Name = "Side"
-Side.Size = UDim2.new(0, 140, 1, -70)
+Side.Size = UDim2.new(0, 150, 1, -70)
 Side.Position = UDim2.new(0, 10, 0, 60)
 Side.BackgroundColor3 = Colors.Surface
 Side.BackgroundTransparency = 0.3
@@ -186,8 +182,8 @@ addGradient(Side, Colors.Surface, Color3.fromRGB(28, 32, 42), 180)
 -- CONTENT AREA
 local Content = Instance.new("Frame", Main)
 Content.Name = "Content"
-Content.Position = UDim2.new(0, 160, 0, 60)
-Content.Size = UDim2.new(1, -170, 1, -70)
+Content.Position = UDim2.new(0, 170, 0, 60)
+Content.Size = UDim2.new(1, -180, 1, -70)
 Content.BackgroundTransparency = 1
 addCorner(Content, 16)
 
@@ -211,7 +207,7 @@ local MiscTab = createTab(Content)
 -- BOTÕES DE ABA ULTRA-FLUIDOS
 local function createNavButton(text, icon, pos, tab)
     local btn = Instance.new("TextButton", Side)
-    btn.Size = UDim2.new(1, -20, 0, 55)
+    btn.Size = UDim2.new(1, -20, 0, 60)
     btn.Position = UDim2.new(0, 10, 0, pos)
     btn.Text = icon .. "  " .. text
     btn.Font = Enum.Font.GothamBold
@@ -231,10 +227,10 @@ local function createNavButton(text, icon, pos, tab)
 end
 
 createNavButton("AIMBOT", "🎯", 15, AimTab)
-createNavButton("VISUAL", "👁️", 80, VisualTab)
-createNavButton("MISC", "🚀", 145, MiscTab)
+createNavButton("VISUAL", "👁️", 85, VisualTab)
+createNavButton("MISC", "🚀", 155, MiscTab)
 
--- ==================== COMPONENTES PREMIUM (RESTAURADOS) ====================
+-- ==================== COMPONENTES PREMIUM (ORGANIZADOS) ====================
 local function createSection(parent, title, yPos, height)
     local section = Instance.new("Frame", parent)
     section.Size = UDim2.new(1, -10, 0, height or 140)
@@ -259,7 +255,7 @@ end
 
 local function createToggle(parent, text, x, y, key)
     local btn = Instance.new("TextButton", parent)
-    btn.Size = UDim2.new(0, 150, 0, 38)
+    btn.Size = UDim2.new(0, 170, 0, 40)
     btn.Position = UDim2.new(0, x, 0, y)
     btn.Font = Enum.Font.GothamBold
     btn.TextColor3 = Colors.Text
@@ -277,21 +273,21 @@ end
 
 local function createSlider(parent, label, x, y, min, max, default, key)
     local frame = Instance.new("Frame", parent)
-    frame.Size = UDim2.new(0, 320, 0, 55)
+    frame.Size = UDim2.new(0, 350, 0, 60)
     frame.Position = UDim2.new(0, x, 0, y)
     frame.BackgroundTransparency = 1
     
     local lbl = Instance.new("TextLabel", frame)
     lbl.Size = UDim2.new(1, 0, 0, 20); lbl.Text = label .. ": " .. default; lbl.TextColor3 = Colors.Text; lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.Gotham; lbl.TextSize = 12; lbl.TextXAlignment = Enum.TextXAlignment.Left
     
-    local slider = Instance.new("Frame", frame); slider.Size = UDim2.new(1, 0, 0, 8); slider.Position = UDim2.new(0, 0, 0, 32); slider.BackgroundColor3 = Colors.Surface; addCorner(slider, 4)
+    local slider = Instance.new("Frame", frame); slider.Size = UDim2.new(1, 0, 0, 8); slider.Position = UDim2.new(0, 0, 0, 35); slider.BackgroundColor3 = Colors.Surface; addCorner(slider, 4)
     local fill = Instance.new("Frame", slider); fill.Size = UDim2.new((default-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Colors.Primary; addCorner(fill, 4)
-    local knob = Instance.new("Frame", slider); knob.Size = UDim2.new(0, 18, 0, 18); knob.Position = UDim2.new(fill.Size.X.Scale, -9, -0.5, 0); knob.BackgroundColor3 = Colors.Text; addCorner(knob, 9)
+    local knob = Instance.new("Frame", slider); knob.Size = UDim2.new(0, 20, 0, 20); knob.Position = UDim2.new(fill.Size.X.Scale, -10, -0.5, 0); knob.BackgroundColor3 = Colors.Text; addCorner(knob, 10)
     
     local dragging = false
     local function updateSlider(input)
         local pos = math.clamp((input.Position.X - slider.AbsolutePosition.X) / slider.AbsoluteSize.X, 0, 1)
-        fill.Size = UDim2.new(pos, 0, 1, 0); knob.Position = UDim2.new(pos, -9, -0.5, 0)
+        fill.Size = UDim2.new(pos, 0, 1, 0); knob.Position = UDim2.new(pos, -10, -0.5, 0)
         local val = math.floor(min + (pos * (max - min))); lbl.Text = label .. ": " .. val; Config[key] = val
     end
     
@@ -300,17 +296,16 @@ local function createSlider(parent, label, x, y, min, max, default, key)
     UIS.InputChanged:Connect(function(i) if dragging and (i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch) then updateSlider(i) end end)
 end
 
--- ==================== CONTEÚDO DAS ABAS (RESTAURADO) ====================
+-- ==================== CONTEÚDO DAS ABAS (LIMPO) ====================
 -- AIM TAB
 local aY = 10
-local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 160); aY = aY + 170
+local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 120); aY = aY + 130
 createToggle(aimSec1, "AIMBOT", 10, 45, "AimEnabled")
-createToggle(aimSec1, "AIM MAGNET", 170, 45, "AimMagnet")
-createToggle(aimSec1, "TEAM CHECK", 10, 100, "TeamCheck")
-createToggle(aimSec1, "VIS CHECK", 170, 100, "VisibleCheck")
+createToggle(aimSec1, "TEAM CHECK", 190, 45, "TeamCheck")
+createToggle(aimSec1, "VIS CHECK", 10, 90, "VisibleCheck")
 
 local ModeBtn = Instance.new("TextButton", aimSec1)
-ModeBtn.Size = UDim2.new(0, 150, 0, 38); ModeBtn.Position = UDim2.new(0, 10, 0, 145); ModeBtn.Font = Enum.Font.GothamBold; ModeBtn.TextColor3 = Colors.Text; ModeBtn.TextSize = 12; addCorner(ModeBtn, 10)
+ModeBtn.Size = UDim2.new(0, 170, 0, 40); ModeBtn.Position = UDim2.new(0, 190, 0, 90); ModeBtn.Font = Enum.Font.GothamBold; ModeBtn.TextColor3 = Colors.Text; ModeBtn.TextSize = 12; addCorner(ModeBtn, 10)
 local function updateMode() ModeBtn.Text = "MODE: " .. Config.AimMode:upper(); ModeBtn.BackgroundColor3 = Config.AimMode == "Rage" and Colors.Danger or Colors.Primary; ModeBtn.BackgroundTransparency = 0.2 end
 ModeBtn.MouseButton1Click:Connect(function() Config.AimMode = Config.AimMode == "Legit" and "Rage" or "Legit"; updateMode() end)
 updateMode()
@@ -327,12 +322,12 @@ createToggle(visSec1, "MASTER ESP", 10, 45, "ESPEnabled")
 
 local visSec2 = createSection(VisualTab, "ESP ELEMENTS", vY, 260); vY = vY + 270
 createToggle(visSec2, "BOX", 10, 45, "BoxEnabled")
-createToggle(visSec2, "NAME", 170, 45, "NameEnabled")
+createToggle(visSec2, "NAME", 190, 45, "NameEnabled")
 createToggle(visSec2, "HEALTH", 10, 100, "HealthEnabled")
-createToggle(visSec2, "LINE", 170, 100, "LineEnabled")
+createToggle(visSec2, "LINE", 190, 100, "LineEnabled")
 
 local LineOriginBtn = Instance.new("TextButton", visSec2)
-LineOriginBtn.Size = UDim2.new(0, 310, 0, 40); LineOriginBtn.Position = UDim2.new(0, 10, 0, 155); LineOriginBtn.Text = "LINE ORIGIN: BOTTOM"; LineOriginBtn.Font = Enum.Font.GothamBold; LineOriginBtn.TextColor3 = Colors.Text; LineOriginBtn.BackgroundColor3 = Colors.SurfaceLight; LineOriginBtn.BackgroundTransparency = 0.4; addCorner(LineOriginBtn, 12)
+LineOriginBtn.Size = UDim2.new(0, 350, 0, 40); LineOriginBtn.Position = UDim2.new(0, 10, 0, 155); LineOriginBtn.Text = "LINE ORIGIN: BOTTOM"; LineOriginBtn.Font = Enum.Font.GothamBold; LineOriginBtn.TextColor3 = Colors.Text; LineOriginBtn.BackgroundColor3 = Colors.SurfaceLight; LineOriginBtn.BackgroundTransparency = 0.4; addCorner(LineOriginBtn, 12)
 LineOriginBtn.MouseButton1Click:Connect(function()
     if Config.LineOrigin == "Bottom" then Config.LineOrigin = "Center" elseif Config.LineOrigin == "Center" then Config.LineOrigin = "Top" else Config.LineOrigin = "Bottom" end
     LineOriginBtn.Text = "LINE ORIGIN: " .. Config.LineOrigin:upper()
@@ -340,12 +335,10 @@ end)
 
 -- MISC TAB
 local mY = 10
-local miscSec1 = createSection(MiscTab, "CHARACTER MODS", mY, 240); mY = mY + 250
+local miscSec1 = createSection(MiscTab, "CHARACTER MODS", mY, 180); mY = mY + 190
 createToggle(miscSec1, "SPEED HACK", 10, 45, "SpeedEnabled")
 createSlider(miscSec1, "WALK SPEED", 10, 100, 16, 300, 16, "WalkSpeed")
-createToggle(miscSec1, "CROSS WALL", 170, 45, "CrossWall")
-createToggle(miscSec1, "FLY HACK", 10, 160, "FlyEnabled")
-createSlider(miscSec1, "FLY SPEED", 10, 200, 10, 200, 50, "FlySpeed")
+createToggle(miscSec1, "CROSS WALL", 190, 45, "CrossWall")
 
 -- ==================== LÓGICA DO ESP SIMPLIFICADO ====================
 local function CreateESP(player)
@@ -363,35 +356,6 @@ local function ClearESP(player)
         ESPObjects[player] = nil
     end
 end
-
--- ==================== LÓGICA DO FLY HACK (SUPERHERO) ====================
-local flyBodyVelocity, flyBodyGyro
-RunService.Heartbeat:Connect(function()
-    if Config.FlyEnabled and LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
-        local root = LocalPlayer.Character.HumanoidRootPart
-        local hum = LocalPlayer.Character.Humanoid
-        if not flyBodyVelocity then
-            flyBodyVelocity = Instance.new("BodyVelocity", root); flyBodyVelocity.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
-            flyBodyGyro = Instance.new("BodyGyro", root); flyBodyGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge); flyBodyGyro.P = 9000
-            hum.PlatformStand = true
-        end
-        local moveDir = hum.MoveDirection
-        local cameraCF = Camera.CFrame
-        local flyDir = Vector3.new(0,0,0)
-        if moveDir.Magnitude > 0 then
-            flyDir = (cameraCF.LookVector * moveDir.Z + cameraCF.RightVector * moveDir.X).Unit * Config.FlySpeed
-            flyBodyGyro.CFrame = CFrame.new(root.Position, root.Position + cameraCF.LookVector) * CFrame.Angles(math.rad(-90), 0, 0)
-        else
-            flyBodyGyro.CFrame = CFrame.new(root.Position, root.Position + cameraCF.LookVector)
-        end
-        flyBodyVelocity.Velocity = flyDir
-    else
-        if flyBodyVelocity then
-            flyBodyVelocity:Destroy(); flyBodyVelocity = nil; flyBodyGyro:Destroy(); flyBodyGyro = nil
-            if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then LocalPlayer.Character.Humanoid.PlatformStand = false end
-        end
-    end
-end)
 
 -- ==================== LOOP PRINCIPAL ====================
 local FOV = Drawing.new("Circle"); FOV.Thickness = 2; FOV.NumSides = 60; FOV.Filled = false; FOV.Transparency = 0.4
@@ -453,17 +417,23 @@ RunService.RenderStepped:Connect(function()
                 if part then
                     local pos, vis = Camera:WorldToViewportPoint(part.Position)
                     local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
-                    if dist < shortest then if Config.VisibleCheck and not IsPlayerVisible(p) and not Config.AimMagnet then continue end; shortest = dist; target = p end
+                    if dist < shortest then 
+                        if Config.VisibleCheck and not IsPlayerVisible(p) then continue end
+                        shortest = dist; target = p 
+                    end
                 end
             end
         end
         if target then
             local part = target.Character[Config.SelectedPart]
-            if Config.AimMode == "Rage" then Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
-            else Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), 1 / (Config.Smoothness * 5)) end
+            if Config.AimMode == "Rage" then 
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
+            else 
+                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), 1 / (Config.Smoothness * 5)) 
+            end
         end
     end
 end)
 
 Players.PlayerRemoving:Connect(ClearESP)
-print("✅ EDSON MODZ V7 ULTIMATE SUPERHERO FULL CARREGADO - 29KB+")
+print("✅ EDSON MODZ V7 ULTIMATE CLEAN EDITION CARREGADO - 29KB+")
