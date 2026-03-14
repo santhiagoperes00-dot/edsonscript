@@ -1,11 +1,11 @@
 -- ============================================================
--- EDSON MODZ V8 - RAYFIELD PERSONALIZED EDITION
+-- EDSON MODZ V8 - ULTIMATE CUSTOM EDITION
 -- DESIGN ULTRA-PROFISSIONAL | SKELETON ESP | AIMBOT UNIVERSAL
--- CUSTOMIZED BY EDSON | RAINBOW MIRROR EFFECT
+-- 100% PERSONALIZADO POR EDSON | RAINBOW EFFECTS
 -- ============================================================
 
--- Carregar Rayfield Library (Base estável)
-local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+-- Carregar Base Estável
+local EDSON_LIB = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 -- Configurações Globais
 local Config = {
@@ -29,11 +29,12 @@ local Config = {
     SpeedEnabled = false
 }
 
--- Criar Janela Principal Personalizada
-local Window = Rayfield:CreateWindow({
+-- Criar Janela Principal Totalmente Personalizada
+local Window = EDSON_LIB:CreateWindow({
     Name = "EDSON MODZ V8",
     LoadingTitle = "EDSON MODZ V8",
     LoadingSubtitle = "by EDSON",
+    ShowText = "Show EDSON", -- Personalizado para Mobile
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "EdsonModz",
@@ -47,18 +48,38 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
--- EFEITO RAINBOW MIRROR NO TÍTULO (Tentativa de personalização visual na UI da Rayfield)
+-- EFEITO RAINBOW DINÂMICO EM TODOS OS TEXTOS "EDSON"
 task.spawn(function()
     while task.wait() do
         pcall(function()
             local CoreGui = game:GetService("CoreGui")
-            local MainFrame = CoreGui:FindFirstChild("Rayfield") or CoreGui:FindFirstChild("EDSON")
-            if MainFrame then
-                local Title = MainFrame:FindFirstChild("Main", true):FindFirstChild("Title", true)
+            local hue = tick() % 5 / 5
+            local rainbowColor = Color3.fromHSV(hue, 1, 1)
+            
+            -- Procurar por elementos da interface da Rayfield (que agora chamamos de EDSON)
+            local MainUI = CoreGui:FindFirstChild("Rayfield") or CoreGui:FindFirstChild("EDSON")
+            if MainUI then
+                -- 1. Título Principal
+                local Title = MainUI:FindFirstChild("Main", true):FindFirstChild("Title", true)
                 if Title and Title:IsA("TextLabel") then
                     Title.Text = "EDSON MODZ V8"
-                    local hue = tick() % 5 / 5
-                    Title.TextColor3 = Color3.fromHSV(hue, 1, 1)
+                    Title.TextColor3 = rainbowColor
+                end
+                
+                -- 2. Botão "Show EDSON" (Mobile)
+                local ShowButton = MainUI:FindFirstChild("Open", true) or MainUI:FindFirstChild("Show", true)
+                if ShowButton and ShowButton:FindFirstChildOfClass("TextLabel") then
+                    local label = ShowButton:FindFirstChildOfClass("TextLabel")
+                    label.Text = "Show EDSON"
+                    label.TextColor3 = rainbowColor
+                end
+                
+                -- 3. Notificações
+                for _, notify in pairs(MainUI:GetDescendants()) do
+                    if notify:IsA("TextLabel") and (notify.Text:find("EDSON") or notify.Text:find("Rayfield")) then
+                        notify.Text = notify.Text:gsub("Rayfield", "EDSON")
+                        notify.TextColor3 = rainbowColor
+                    end
                 end
             end
         end)
@@ -71,7 +92,7 @@ local VisualTab = Window:CreateTab("VISUAL", "eye")
 local MiscTab = Window:CreateTab("MISC", "settings")
 
 -- Seção Aimbot
-AimTab:CreateSection("Combate de Elite")
+AimTab:CreateSection("Combate de Elite - EDSON")
 
 AimTab:CreateToggle({
     Name = "Ativar Aimbot (EDSON)",
@@ -145,7 +166,7 @@ AimTab:CreateToggle({
 })
 
 -- Seção Visual
-VisualTab:CreateSection("Visão Avançada")
+VisualTab:CreateSection("Visão Avançada - EDSON")
 
 VisualTab:CreateToggle({
     Name = "Ativar ESP",
@@ -175,7 +196,7 @@ VisualTab:CreateToggle({
 })
 
 VisualTab:CreateToggle({
-    Name = "Nome ESP (Texto Branco)",
+    Name = "Nome ESP (Branco)",
     CurrentValue = true,
     Flag = "NameEnabled",
     Callback = function(Value)
@@ -202,7 +223,7 @@ VisualTab:CreateToggle({
 })
 
 -- Seção Misc
-MiscTab:CreateSection("Outras Funções")
+MiscTab:CreateSection("Outras Funções - EDSON")
 
 MiscTab:CreateToggle({
     Name = "Ativar Speed Hack",
@@ -367,9 +388,9 @@ end)
 game:GetService("Players").PlayerAdded:Connect(createESP)
 for _, p in ipairs(game:GetService("Players"):GetPlayers()) do if p ~= game:GetService("Players").LocalPlayer then createESP(p) end end
 
-Rayfield:Notify({
+EDSON_LIB:Notify({
     Title = "EDSON MODZ V8",
-    Content = "Bem-vindo de volta, EDSON! Script carregado com sucesso.",
+    Content = "Bem-vindo de volta, EDSON! Script 100% carregado.",
     Duration = 5,
     Image = "check-circle",
 })
