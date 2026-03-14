@@ -1,63 +1,62 @@
 -- ============================================================
--- EDSON MODZ V8 - UNIVERSAL EXECUTION EDITION
--- COMPATIBILIDADE TOTAL: PC & MOBILE (SOLARA, DELTA, FLUXUS, ETC)
+-- EDSON MODZ V8 - COMPATIBILIDADE MÁXIMA (PC & MOBILE)
 -- AIMBOT UNIVERSAL | SKELETON ESP | REALISTIC BOX
+-- RAINBOW MIRROR NAME | CENTRALIZED FOV | FIXED EXECUTION
 -- ============================================================
 
--- Limpeza de instâncias anteriores (Prevenção de Erros)
-local oldUI = game:GetService("CoreGui"):FindFirstChild("EdsonModzV8") or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("EdsonModzV8")
-if oldUI then oldUI:Destroy() end
-
-local TweenService    = game:GetService("TweenService")
+-- Serviços Essenciais
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local Players         = game:GetService("Players")
-local RunService      = game:GetService("RunService")
-local Camera          = workspace.CurrentCamera
-local LocalPlayer     = Players.LocalPlayer
+local TweenService = game:GetService("TweenService")
+local Camera = workspace.CurrentCamera
+local LocalPlayer = Players.LocalPlayer
 
--- ==================== CONFIGURAÇÕES GLOBAIS ====================
+-- Proteção de Execução
+if _G.EdsonModzLoaded then return end
+_G.EdsonModzLoaded = true
+
+-- Configurações Globais
 local Config = {
-    AimEnabled      = false,
-    AimMode         = "Legit",
-    TeamCheck       = false,
-    VisibleCheck    = true,
-    SelectedPart    = "Head",
-    Smoothness      = 4,
-    Prediction      = 0.12,
-    FOVSize         = 150,
-    FOVVisible      = true,
-    TriggerKey      = "MouseButton2",
+    AimEnabled = false,
+    AimMode = "Legit",
+    TeamCheck = false,
+    VisibleCheck = true,
+    SelectedPart = "Head",
+    Smoothness = 4,
+    Prediction = 0.12,
+    FOVSize = 150,
+    FOVVisible = true,
+    TriggerKey = "MouseButton2",
 
-    ESPEnabled      = false,
-    BoxEnabled      = true,
+    ESPEnabled = false,
+    BoxEnabled = true,
     SkeletonEnabled = true,
-    NameEnabled     = true,
-    HealthEnabled   = true,
-    LineEnabled     = true,
+    NameEnabled = true,
+    HealthEnabled = true,
+    LineEnabled = true,
     
-    Platform        = "PC",
-    SkeletonColor   = Color3.fromRGB(255, 255, 255),
-    NameColor       = Color3.fromRGB(255, 255, 255),
-    BoxColor        = Color3.fromRGB(255, 255, 255),
+    Platform = "PC"
 }
 
+-- Paleta de Cores
 local Colors = {
-    Primary     = Color3.fromRGB(130, 50, 255),
-    Accent      = Color3.fromRGB(200, 150, 255),
-    Success     = Color3.fromRGB(46, 204, 113),
-    Danger      = Color3.fromRGB(231, 76, 60),
-    Background  = Color3.fromRGB(15, 15, 22),
-    Surface     = Color3.fromRGB(25, 25, 35),
-    Text        = Color3.fromRGB(255, 255, 255),
+    Primary = Color3.fromRGB(130, 50, 255),
+    Accent = Color3.fromRGB(200, 150, 255),
+    Success = Color3.fromRGB(46, 204, 113),
+    Danger = Color3.fromRGB(231, 76, 60),
+    Background = Color3.fromRGB(15, 15, 22),
+    Surface = Color3.fromRGB(25, 25, 35),
+    Text = Color3.fromRGB(255, 255, 255)
 }
 
--- ==================== SCREENUI (MÉTODO UNIVERSAL) ====================
+-- Criar ScreenGui de Forma Segura
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "EdsonModzV8"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
--- Tenta CoreGui, se falhar vai pro PlayerGui (Garante que apareça!)
+-- Tenta CoreGui, se falhar vai pro PlayerGui
 local success, err = pcall(function()
     ScreenGui.Parent = game:GetService("CoreGui")
 end)
@@ -65,7 +64,7 @@ if not success then
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- Funções de UI
+-- Funções de UI Auxiliares
 local function addCorner(obj, radius)
     local c = Instance.new("UICorner")
     c.CornerRadius = UDim.new(0, radius or 10)
@@ -80,7 +79,7 @@ local function addStroke(obj, thickness, color, transparency)
     s.Parent = obj
 end
 
--- ==================== TELA DE SELEÇÃO ====================
+-- Tela de Seleção Inicial
 local SelectFrame = Instance.new("Frame", ScreenGui)
 SelectFrame.Size = UDim2.new(0, 360, 0, 220)
 SelectFrame.Position = UDim2.new(0.5, -180, 0.5, -110)
@@ -91,7 +90,7 @@ addStroke(SelectFrame, 2, Colors.Primary, 0.4)
 
 local SelectTitle = Instance.new("TextLabel", SelectFrame)
 SelectTitle.Size = UDim2.new(1, 0, 0, 50)
-SelectTitle.Text = "EDSON MODZ V8 - PLATAFORMA"
+SelectTitle.Text = "EDSON MODZ V8 - SELECIONE"
 SelectTitle.TextColor3 = Colors.Text
 SelectTitle.Font = Enum.Font.GothamBold
 SelectTitle.TextSize = 16
@@ -118,15 +117,15 @@ local function createSelectBtn(text, icon, pos, platform)
             Config.FOVSize = 120
         end
         SelectFrame.Visible = false
-        _G.InitEdsonScript()
+        _G.InitMainEdsonScript()
     end)
 end
 
 createSelectBtn("PC / DESKTOP", "💻", UDim2.new(0, 30, 0, 70), "PC")
 createSelectBtn("MOBILE / CELULAR", "📱", UDim2.new(0, 190, 0, 70), "Mobile")
 
--- ==================== SCRIPT PRINCIPAL ====================
-_G.InitEdsonScript = function()
+-- Script Principal
+_G.InitMainEdsonScript = function()
     local MainSize = Config.Platform == "Mobile" and UDim2.new(0, 460, 0, 360) or UDim2.new(0, 540, 0, 440)
     local Main = Instance.new("Frame", ScreenGui)
     Main.Name = "Main"
@@ -139,7 +138,7 @@ _G.InitEdsonScript = function()
     addCorner(Main, 18)
     addStroke(Main, 2, Colors.Primary, 0.4)
 
-    -- TÍTULO RAINBOW
+    -- Título Rainbow
     local UserBtn = Instance.new("TextButton", Main)
     UserBtn.Size = UDim2.new(1, -40, 0, 50)
     UserBtn.Position = UDim2.new(0, 20, 0, 5)
@@ -152,9 +151,9 @@ _G.InitEdsonScript = function()
 
     local RainbowGradient = Instance.new("UIGradient", UserBtn)
     RainbowGradient.Color = ColorSequence.new({
-        ColorSequenceKeypoint.new(0,   Color3.fromRGB(255, 0, 0)),
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
         ColorSequenceKeypoint.new(0.5, Color3.fromRGB(0, 255, 255)),
-        ColorSequenceKeypoint.new(1,   Color3.fromRGB(255, 0, 255))
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
     })
     RunService.RenderStepped:Connect(function() RainbowGradient.Offset = Vector2.new(tick() % 2 / 2, 0) end)
 
@@ -186,7 +185,7 @@ _G.InitEdsonScript = function()
         end
     end)
 
-    -- SIDEBAR
+    -- Sidebar
     local Side = Instance.new("Frame", Main)
     Side.Name = "Side"
     Side.Size = UDim2.new(0, Config.Platform == "Mobile" and 110 or 140, 1, -70)
@@ -300,7 +299,7 @@ _G.InitEdsonScript = function()
         end)
     end
 
-    -- ABAS CONTENT
+    -- Seções das Abas
     local s1 = createSection(AimTab, "AIMBOT", 220)
     createToggle(s1, "Enable", 10, 35, "AimEnabled")
     createToggle(s1, "Team Check", Config.Platform == "Mobile" and 140 or 180, 35, "TeamCheck")
@@ -320,9 +319,15 @@ _G.InitEdsonScript = function()
     local s3 = createSection(MiscTab, "MISC", 100)
     createSlider(s3, "WalkSpeed", 10, 35, 16, 250, 16, "WalkSpeed")
 
-    -- LÓGICA DO AIMBOT
-    local FOV_Circle = Drawing.new("Circle")
-    FOV_Circle.Thickness = 1.5; FOV_Circle.NumSides = 64; FOV_Circle.Color = Colors.Primary; FOV_Circle.Filled = false
+    -- Lógica do Aimbot e ESP (Segura)
+    local FOV_Circle = nil
+    pcall(function()
+        FOV_Circle = Drawing.new("Circle")
+        FOV_Circle.Thickness = 1.5
+        FOV_Circle.NumSides = 64
+        FOV_Circle.Color = Colors.Primary
+        FOV_Circle.Filled = false
+    end)
 
     local function GetClosestPlayer()
         local closest, closestDist = nil, Config.FOVSize
@@ -349,35 +354,40 @@ _G.InitEdsonScript = function()
         return closest
     end
 
-    -- LÓGICA DO ESP
     local ESPObjects = {}
     local function createESP(p)
         if ESPObjects[p] then return end
-        local esp = {
-            Box = {Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line")},
-            Skeleton = {},
-            Name = Drawing.new("Text"),
-            Health = Drawing.new("Square"),
-            HealthBar = Drawing.new("Square"),
-            Line = Drawing.new("Line")
-        }
-        esp.Name.Size = 14; esp.Name.Center = true; esp.Name.Outline = true; esp.Name.Color = Config.NameColor
-        esp.Line.Thickness = 1.5; esp.Line.Color = Config.BoxColor
-        for _, v in pairs(esp.Box) do v.Thickness = 1.5; v.Color = Config.BoxColor; v.Visible = false end
-        esp.Health.Filled = true; esp.Health.Color = Color3.fromRGB(0,0,0); esp.Health.Transparency = 0.5
-        esp.HealthBar.Filled = true; esp.HealthBar.Color = Colors.Success
-        for i=1, 10 do
-            local line = Drawing.new("Line"); line.Thickness = 2; line.Color = Config.SkeletonColor; line.Visible = false
-            table.insert(esp.Skeleton, line)
-        end
-        ESPObjects[p] = esp
+        pcall(function()
+            local esp = {
+                Box = {Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line")},
+                Skeleton = {},
+                Name = Drawing.new("Text"),
+                Health = Drawing.new("Square"),
+                HealthBar = Drawing.new("Square"),
+                Line = Drawing.new("Line")
+            }
+            esp.Name.Size = 14; esp.Name.Center = true; esp.Name.Outline = true; esp.Name.Color = Color3.new(1,1,1)
+            esp.Line.Thickness = 1.5; esp.Line.Color = Color3.new(1,1,1)
+            for _, v in pairs(esp.Box) do v.Thickness = 1.5; v.Color = Color3.new(1,1,1); v.Visible = false end
+            esp.Health.Filled = true; esp.Health.Color = Color3.fromRGB(0,0,0); esp.Health.Transparency = 0.5
+            esp.HealthBar.Filled = true; esp.HealthBar.Color = Colors.Success
+            for i=1, 10 do
+                local line = Drawing.new("Line"); line.Thickness = 2; line.Color = Color3.new(1,1,1); line.Visible = false
+                table.insert(esp.Skeleton, line)
+            end
+            ESPObjects[p] = esp
+        end)
     end
 
-    -- LOOP PRINCIPAL
     RunService.RenderStepped:Connect(function()
         local viewport = Camera.ViewportSize
         local center = Vector2.new(viewport.X / 2, viewport.Y / 2)
-        FOV_Circle.Position = center; FOV_Circle.Radius = Config.FOVSize; FOV_Circle.Visible = Config.AimEnabled and Config.FOVVisible
+        
+        if FOV_Circle then
+            FOV_Circle.Position = center
+            FOV_Circle.Radius = Config.FOVSize
+            FOV_Circle.Visible = Config.AimEnabled and Config.FOVVisible
+        end
 
         -- Aimbot
         local isAiming = (Config.Platform == "Mobile" and Config.AimEnabled) or (Config.AimEnabled and UserInputService:IsMouseButtonPressed(Enum.UserInputType[Config.TriggerKey]))
@@ -439,5 +449,3 @@ _G.InitEdsonScript = function()
     for _, p in ipairs(Players:GetPlayers()) do if p ~= LocalPlayer then createESP(p) end end
     Players.PlayerRemoving:Connect(function(p) if ESPObjects[p] then for _, v in pairs(ESPObjects[p]) do if type(v) == "table" then for _, x in pairs(v) do x:Remove() end else v:Remove() end end ESPObjects[p] = nil end end)
 }
-
-print("EDSON MODZ V8 CARREGADO COM SUCESSO!")
