@@ -1,13 +1,13 @@
 -- ============================================================
--- EDSON MODZ V8 - RAYFIELD PREMIUM EDITION
+-- EDSON MODZ V8 - RAYFIELD PERSONALIZED EDITION
 -- DESIGN ULTRA-PROFISSIONAL | SKELETON ESP | AIMBOT UNIVERSAL
--- POWERED BY RAYFIELD UI LIBRARY
+-- CUSTOMIZED BY EDSON | RAINBOW MIRROR EFFECT
 -- ============================================================
 
--- Carregar Rayfield Library
+-- Carregar Rayfield Library (Base estável)
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
--- Configurações Iniciais
+-- Configurações Globais
 local Config = {
     AimEnabled = false,
     TeamCheck = false,
@@ -29,11 +29,11 @@ local Config = {
     SpeedEnabled = false
 }
 
--- Criar Janela Principal
+-- Criar Janela Principal Personalizada
 local Window = Rayfield:CreateWindow({
     Name = "EDSON MODZ V8",
     LoadingTitle = "EDSON MODZ V8",
-    LoadingSubtitle = "by Sirius & Edson",
+    LoadingSubtitle = "by EDSON",
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "EdsonModz",
@@ -47,16 +47,34 @@ local Window = Rayfield:CreateWindow({
     KeySystem = false
 })
 
+-- EFEITO RAINBOW MIRROR NO TÍTULO (Tentativa de personalização visual na UI da Rayfield)
+task.spawn(function()
+    while task.wait() do
+        pcall(function()
+            local CoreGui = game:GetService("CoreGui")
+            local MainFrame = CoreGui:FindFirstChild("Rayfield") or CoreGui:FindFirstChild("EDSON")
+            if MainFrame then
+                local Title = MainFrame:FindFirstChild("Main", true):FindFirstChild("Title", true)
+                if Title and Title:IsA("TextLabel") then
+                    Title.Text = "EDSON MODZ V8"
+                    local hue = tick() % 5 / 5
+                    Title.TextColor3 = Color3.fromHSV(hue, 1, 1)
+                end
+            end
+        end)
+    end
+end)
+
 -- Abas
 local AimTab = Window:CreateTab("AIMBOT", "target")
 local VisualTab = Window:CreateTab("VISUAL", "eye")
 local MiscTab = Window:CreateTab("MISC", "settings")
 
 -- Seção Aimbot
-AimTab:CreateSection("Configurações de Combate")
+AimTab:CreateSection("Combate de Elite")
 
 AimTab:CreateToggle({
-    Name = "Ativar Aimbot",
+    Name = "Ativar Aimbot (EDSON)",
     CurrentValue = false,
     Flag = "AimEnabled",
     Callback = function(Value)
@@ -74,7 +92,7 @@ AimTab:CreateToggle({
 })
 
 AimTab:CreateToggle({
-    Name = "Wall Check (Visibilidade)",
+    Name = "Wall Check",
     CurrentValue = true,
     Flag = "VisibleCheck",
     Callback = function(Value)
@@ -118,7 +136,7 @@ AimTab:CreateSlider({
 })
 
 AimTab:CreateToggle({
-    Name = "Mostrar Círculo FOV",
+    Name = "Mostrar FOV",
     CurrentValue = true,
     Flag = "FOVVisible",
     Callback = function(Value)
@@ -127,7 +145,7 @@ AimTab:CreateToggle({
 })
 
 -- Seção Visual
-VisualTab:CreateSection("Configurações de ESP")
+VisualTab:CreateSection("Visão Avançada")
 
 VisualTab:CreateToggle({
     Name = "Ativar ESP",
@@ -157,7 +175,7 @@ VisualTab:CreateToggle({
 })
 
 VisualTab:CreateToggle({
-    Name = "Nome ESP",
+    Name = "Nome ESP (Texto Branco)",
     CurrentValue = true,
     Flag = "NameEnabled",
     Callback = function(Value)
@@ -175,7 +193,7 @@ VisualTab:CreateToggle({
 })
 
 VisualTab:CreateToggle({
-    Name = "Linha ESP (Tracers)",
+    Name = "Linha ESP (Centro)",
     CurrentValue = true,
     Flag = "LineEnabled",
     Callback = function(Value)
@@ -350,8 +368,8 @@ game:GetService("Players").PlayerAdded:Connect(createESP)
 for _, p in ipairs(game:GetService("Players"):GetPlayers()) do if p ~= game:GetService("Players").LocalPlayer then createESP(p) end end
 
 Rayfield:Notify({
-    Title = "EDSON MODZ V8 CARREGADO",
-    Content = "Script iniciado com sucesso! Aproveite.",
+    Title = "EDSON MODZ V8",
+    Content = "Bem-vindo de volta, EDSON! Script carregado com sucesso.",
     Duration = 5,
     Image = "check-circle",
 })
