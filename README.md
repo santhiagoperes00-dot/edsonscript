@@ -1,14 +1,12 @@
 -- ============================================================
--- EDSON MODZ V8 - ULTIMATE ANIMATED PREMIUM EDITION
--- DESIGN FLUIDO | SKELETON ESP | AIMBOT UNIVERSAL
--- RAINBOW MIRROR NAME | CLICK-TO-EXPAND (ANIMATED)
+-- EDSON MODZ V8 - VERSÃO DEFINITIVA (PC & MOBILE)
+-- EXECUÇÃO GARANTIDA | AIMBOT UNIVERSAL | SKELETON ESP
+-- RAINBOW MIRROR NAME | CLICK-TO-EXPAND (STARTS MINIMIZED)
 -- ============================================================
 
--- Serviços Essenciais
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
-local TweenService = game:GetService("TweenService")
 local Camera = workspace.CurrentCamera
 local LocalPlayer = Players.LocalPlayer
 
@@ -19,7 +17,7 @@ if _G.EdsonModzLoaded then
 end
 _G.EdsonModzLoaded = true
 
--- Configurações (Simples e Diretas)
+-- Configurações Globais
 local Config = {
     AimEnabled = false,
     TeamCheck = false,
@@ -43,15 +41,14 @@ local Config = {
     SpeedEnabled = false
 }
 
--- Paleta de Cores Premium
+-- Cores
 local Colors = {
     Primary = Color3.fromRGB(130, 50, 255),
     Background = Color3.fromRGB(15, 15, 22),
     Surface = Color3.fromRGB(25, 25, 35),
     Text = Color3.fromRGB(255, 255, 255),
     Success = Color3.fromRGB(46, 204, 113),
-    Danger = Color3.fromRGB(231, 76, 60),
-    Accent = Color3.fromRGB(200, 150, 255)
+    Danger = Color3.fromRGB(231, 76, 60)
 }
 
 -- Criar ScreenGui de Forma Segura
@@ -67,40 +64,39 @@ if not pcall_success then
     ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 end
 
--- Helpers de UI
+-- Função para arredondar cantos (Simples)
 local function addCorner(obj, radius)
     local c = Instance.new("UICorner")
-    c.CornerRadius = UDim.new(0, radius or 12)
+    c.CornerRadius = UDim.new(0, radius or 10)
     c.Parent = obj
 end
 
 -- TELA DE SELEÇÃO INICIAL (Obrigatória para definir PC/Mobile)
 local SelectFrame = Instance.new("Frame", ScreenGui)
-SelectFrame.Size = UDim2.new(0, 360, 0, 220)
-SelectFrame.Position = UDim2.new(0.5, -180, 0.5, -110)
+SelectFrame.Size = UDim2.new(0, 340, 0, 200)
+SelectFrame.Position = UDim2.new(0.5, -170, 0.5, -100)
 SelectFrame.BackgroundColor3 = Colors.Background
-SelectFrame.BackgroundTransparency = 0.1
-addCorner(SelectFrame, 20)
+SelectFrame.BorderSizePixel = 0
+addCorner(SelectFrame, 15)
 
 local SelectTitle = Instance.new("TextLabel", SelectFrame)
-SelectTitle.Size = UDim2.new(1, 0, 0, 60)
-SelectTitle.Text = "EDSON MODZ V8 - PLATAFORMA"
+SelectTitle.Size = UDim2.new(1, 0, 0, 50)
+SelectTitle.Text = "EDSON MODZ V8 - SELECIONE"
 SelectTitle.TextColor3 = Colors.Text
 SelectTitle.Font = Enum.Font.GothamBold
-SelectTitle.TextSize = 18
+SelectTitle.TextSize = 16
 SelectTitle.BackgroundTransparency = 1
 
 local function createSelectBtn(text, pos, platform)
     local btn = Instance.new("TextButton", SelectFrame)
-    btn.Size = UDim2.new(0, 140, 0, 100)
+    btn.Size = UDim2.new(0, 130, 0, 80)
     btn.Position = pos
     btn.Text = text
     btn.Font = Enum.Font.GothamBold
     btn.TextSize = 14
     btn.TextColor3 = Colors.Text
     btn.BackgroundColor3 = Colors.Surface
-    btn.BackgroundTransparency = 0.4
-    addCorner(btn, 15)
+    addCorner(btn, 12)
 
     btn.MouseButton1Click:Connect(function()
         Config.Platform = platform
@@ -109,33 +105,32 @@ local function createSelectBtn(text, pos, platform)
             Config.FOVSize = 120
         end
         SelectFrame:Destroy()
-        _G.InitPremiumMenu()
+        _G.StartMainEdsonMenu()
     end)
 end
 
-createSelectBtn("PC / DESKTOP", UDim2.new(0, 30, 0, 80), "PC")
-createSelectBtn("MOBILE / CELULAR", UDim2.new(0, 190, 0, 80), "Mobile")
+createSelectBtn("PC / DESKTOP", UDim2.new(0, 30, 0, 70), "PC")
+createSelectBtn("MOBILE / CELULAR", UDim2.new(0, 180, 0, 70), "Mobile")
 
--- MENU PRINCIPAL (COM ANIMAÇÕES)
-_G.InitPremiumMenu = function()
-    local MainSize = Config.Platform == "Mobile" and UDim2.new(0, 480, 0, 360) or UDim2.new(0, 560, 0, 440)
-    local MinimizedSize = UDim2.new(0, 220, 0, 55)
+-- MENU PRINCIPAL
+_G.StartMainEdsonMenu = function()
+    local MainSize = Config.Platform == "Mobile" and UDim2.new(0, 440, 0, 340) or UDim2.new(0, 520, 0, 420)
+    local MinimizedSize = UDim2.new(0, 220, 0, 50)
     
     local Main = Instance.new("Frame", ScreenGui)
     Main.Name = "Main"
     Main.Size = MinimizedSize -- Começa minimizado
     Main.Position = UDim2.new(0.5, -110, 0.1, 0)
     Main.BackgroundColor3 = Colors.Background
-    Main.BackgroundTransparency = 0.2
     Main.Active = true
     Main.Draggable = true
     Main.ClipsDescendants = true
     addCorner(Main, 15)
 
-    -- Título Rainbow Mirror (Botão de Expansão)
+    -- Título Rainbow Mirror (O Botão de Controle)
     local TitleBtn = Instance.new("TextButton", Main)
     TitleBtn.Name = "TitleBtn"
-    TitleBtn.Size = UDim2.new(1, 0, 0, 55)
+    TitleBtn.Size = UDim2.new(1, 0, 0, 50)
     TitleBtn.Position = UDim2.new(0, 0, 0, 0)
     TitleBtn.Text = "EDSON MODZ"
     TitleBtn.BackgroundTransparency = 1
@@ -158,54 +153,47 @@ _G.InitPremiumMenu = function()
     -- Container do Conteúdo
     local Container = Instance.new("Frame", Main)
     Container.Name = "Container"
-    Container.Size = UDim2.new(1, 0, 1, -55)
-    Container.Position = UDim2.new(0, 0, 0, 55)
+    Container.Size = UDim2.new(1, 0, 1, -50)
+    Container.Position = UDim2.new(0, 0, 0, 50)
     Container.BackgroundTransparency = 1
     Container.Visible = false
 
     -- Sidebar
     local Side = Instance.new("Frame", Container)
-    Side.Size = UDim2.new(0, 130, 1, -20)
-    Side.Position = UDim2.new(0, 15, 0, 5)
+    Side.Size = UDim2.new(0, 120, 1, -20)
+    Side.Position = UDim2.new(0, 10, 0, 10)
     Side.BackgroundColor3 = Colors.Surface
-    Side.BackgroundTransparency = 0.4
     addCorner(Side, 15)
 
     -- Conteúdo Principal
     local Content = Instance.new("Frame", Container)
-    Content.Size = UDim2.new(1, -170, 1, -20)
-    Content.Position = UDim2.new(0, 155, 0, 5)
+    Content.Size = UDim2.new(1, -150, 1, -20)
+    Content.Position = UDim2.new(0, 140, 0, 10)
     Content.BackgroundTransparency = 1
 
-    -- Lógica de Minimizar/Expandir com Animação
+    -- Lógica de Minimizar/Expandir (Simples para garantir funcionamento)
     local IsMinimized = true
     TitleBtn.MouseButton1Click:Connect(function()
         IsMinimized = not IsMinimized
         if IsMinimized then
             Container.Visible = false
-            TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Size = MinimizedSize,
-                BackgroundTransparency = 0.2
-            }):Play()
+            Main.Size = MinimizedSize
         else
-            TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {
-                Size = MainSize,
-                BackgroundTransparency = 0.1
-            }):Play()
-            task.delay(0.2, function() Container.Visible = true end)
+            Main.Size = MainSize
+            Container.Visible = true
         end
     end)
 
-    -- Sistema de Abas
+    -- Tabs System
     local function createTab(parent)
         local tab = Instance.new("ScrollingFrame", parent)
         tab.Size = UDim2.new(1, 0, 1, 0)
         tab.BackgroundTransparency = 1
         tab.Visible = false
-        tab.ScrollBarThickness = 0
+        tab.ScrollBarThickness = 2
         tab.AutomaticCanvasSize = Enum.AutomaticSize.Y
         local list = Instance.new("UIListLayout", tab)
-        list.Padding = UDim.new(0, 10)
+        list.Padding = UDim.new(0, 8)
         list.SortOrder = Enum.SortOrder.LayoutOrder
         return tab
     end
@@ -216,98 +204,62 @@ _G.InitPremiumMenu = function()
 
     local function createNav(text, y, tab)
         local btn = Instance.new("TextButton", Side)
-        btn.Size = UDim2.new(1, -20, 0, 45)
-        btn.Position = UDim2.new(0, 10, 0, y)
+        btn.Size = UDim2.new(1, -16, 0, 40)
+        btn.Position = UDim2.new(0, 8, 0, y)
         btn.Text = text
         btn.Font = Enum.Font.GothamBold
         btn.TextSize = 12
         btn.TextColor3 = Colors.Text
         btn.BackgroundColor3 = Colors.Surface
-        btn.BackgroundTransparency = 0.6
-        addCorner(btn, 10)
-        
+        btn.BackgroundTransparency = 0.5
+        addCorner(btn, 8)
         btn.MouseButton1Click:Connect(function()
             AimTab.Visible = false; VisualTab.Visible = false; MiscTab.Visible = false
             tab.Visible = true
         end)
     end
-    createNav("AIMBOT", 20, AimTab)
-    createNav("VISUAL", 75, VisualTab)
-    createNav("MISC", 130, MiscTab)
+    createNav("AIMBOT", 15, AimTab)
+    createNav("VISUAL", 65, VisualTab)
+    createNav("MISC", 115, MiscTab)
 
     -- Componentes UI (Toggles e Sliders)
     local function createToggle(parent, text, key)
-        local frame = Instance.new("Frame", parent)
-        frame.Size = UDim2.new(1, -5, 0, 45)
-        frame.BackgroundColor3 = Colors.Surface
-        frame.BackgroundTransparency = 0.5
-        addCorner(frame, 10)
-
-        local lbl = Instance.new("TextLabel", frame)
-        lbl.Size = UDim2.new(1, -60, 1, 0)
-        lbl.Position = UDim2.new(0, 15, 0, 0)
-        lbl.Text = text
-        lbl.TextColor3 = Colors.Text
-        lbl.Font = Enum.Font.GothamBold
-        lbl.TextSize = 12
-        lbl.BackgroundTransparency = 1
-        lbl.TextXAlignment = Enum.TextXAlignment.Left
-
-        local toggle = Instance.new("TextButton", frame)
-        toggle.Size = UDim2.new(0, 45, 0, 25)
-        toggle.Position = UDim2.new(1, -55, 0.5, -12)
-        toggle.Text = ""
-        addCorner(toggle, 12)
-
+        local btn = Instance.new("TextButton", parent)
+        btn.Size = UDim2.new(1, -10, 0, 35)
+        btn.Font = Enum.Font.GothamBold
+        btn.TextColor3 = Colors.Text
+        btn.TextSize = 11
+        addCorner(btn, 8)
         local function update()
-            local on = Config[key]
-            TweenService:Create(toggle, TweenInfo.new(0.3), {
-                BackgroundColor3 = on and Colors.Success or Colors.Danger
-            }):Play()
+            btn.Text = text .. ": " .. (Config[key] and "ON" or "OFF")
+            btn.BackgroundColor3 = Config[key] and Colors.Success or Colors.Danger
         end
-        toggle.MouseButton1Click:Connect(function() Config[key] = not Config[key]; update() end)
+        btn.MouseButton1Click:Connect(function() Config[key] = not Config[key]; update() end)
         update()
     end
 
     local function createSlider(parent, label, min, max, key)
         local frame = Instance.new("Frame", parent)
-        frame.Size = UDim2.new(1, -5, 0, 60)
-        frame.BackgroundColor3 = Colors.Surface
-        frame.BackgroundTransparency = 0.5
-        addCorner(frame, 10)
-
+        frame.Size = UDim2.new(1, -10, 0, 50)
+        frame.BackgroundTransparency = 1
         local lbl = Instance.new("TextLabel", frame)
-        lbl.Size = UDim2.new(1, -30, 0, 30)
-        lbl.Position = UDim2.new(0, 15, 0, 5)
-        lbl.Text = label .. ": " .. Config[key]
-        lbl.TextColor3 = Colors.Text
-        lbl.Font = Enum.Font.GothamBold
-        lbl.TextSize = 11
-        lbl.BackgroundTransparency = 1
-        lbl.TextXAlignment = Enum.TextXAlignment.Left
-
-        local track = Instance.new("Frame", frame)
-        track.Size = UDim2.new(1, -30, 0, 6)
-        track.Position = UDim2.new(0, 15, 0, 40)
-        track.BackgroundColor3 = Colors.Background
-        addCorner(track, 3)
-
-        local fill = Instance.new("Frame", track)
-        fill.Size = UDim2.new((Config[key]-min)/(max-min), 0, 1, 0)
-        fill.BackgroundColor3 = Colors.Primary
-        addCorner(fill, 3)
-
-        local function move()
-            local newX = math.clamp((UserInputService:GetMouseLocation().X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
-            local val = math.floor(min + (max - min) * newX + 0.5)
-            Config[key] = val
-            lbl.Text = label .. ": " .. val
-            fill.Size = UDim2.new(newX, 0, 1, 0)
-        end
-
+        lbl.Size = UDim2.new(1, 0, 0, 20); lbl.Text = label .. ": " .. Config[key]; lbl.TextColor3 = Colors.Text; lbl.BackgroundTransparency = 1; lbl.Font = Enum.Font.Gotham; lbl.TextSize = 11; lbl.TextXAlignment = Enum.TextXAlignment.Left
+        local track = Instance.new("Frame", frame); track.Size = UDim2.new(1, 0, 0, 6); track.Position = UDim2.new(0, 0, 0, 25); track.BackgroundColor3 = Colors.Surface; addCorner(track, 3)
+        local fill = Instance.new("Frame", track); fill.Size = UDim2.new((Config[key]-min)/(max-min), 0, 1, 0); fill.BackgroundColor3 = Colors.Primary; addCorner(fill, 3)
+        
         track.InputBegan:Connect(function(i)
             if i.UserInputType == Enum.UserInputType.MouseButton1 or i.UserInputType == Enum.UserInputType.Touch then
-                local conn; conn = RunService.RenderStepped:Connect(move)
+                local function move()
+                    local newX = math.clamp((UserInputService:GetMouseLocation().X - track.AbsolutePosition.X) / track.AbsoluteSize.X, 0, 1)
+                    local val = math.floor(min + (max - min) * newX + 0.5)
+                    Config[key] = val
+                    lbl.Text = label .. ": " .. val
+                    fill.Size = UDim2.new(newX, 0, 1, 0)
+                end
+                move()
+                local conn; conn = UserInputService.InputChanged:Connect(function(input)
+                    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then move() end
+                end)
                 UserInputService.InputEnded:Connect(function(input)
                     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then conn:Disconnect() end
                 end)
@@ -315,7 +267,7 @@ _G.InitPremiumMenu = function()
         end)
     end
 
-    -- Montar Tabs
+    -- Montar Menus
     createToggle(AimTab, "Ativar Aimbot", "AimEnabled")
     createToggle(AimTab, "Team Check", "TeamCheck")
     createToggle(AimTab, "Wall Check", "VisibleCheck")
@@ -333,7 +285,7 @@ _G.InitPremiumMenu = function()
     createToggle(MiscTab, "Ativar Speed", "SpeedEnabled")
     createSlider(MiscTab, "Velocidade", 16, 250, "WalkSpeed")
 
-    -- LÓGICA DE AIMBOT E ESP (ESTÁVEL)
+    -- LÓGICA DE AIMBOT E ESP (SEGURA)
     local FOV_Circle = nil
     pcall(function()
         FOV_Circle = Drawing.new("Circle")
@@ -367,6 +319,7 @@ _G.InitPremiumMenu = function()
 
     local ESPs = {}
     local function createESP(p)
+        if ESPs[p] then return end
         pcall(function()
             ESPs[p] = {
                 Box = {Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line")},
@@ -378,7 +331,7 @@ _G.InitPremiumMenu = function()
             }
             ESPs[p].Name.Size = 14; ESPs[p].Name.Center = true; ESPs[p].Name.Outline = true; ESPs[p].Name.Color = Color3.new(1,1,1)
             ESPs[p].Line.Thickness = 1; ESPs[p].Line.Color = Color3.new(1,1,1)
-            for _, v in pairs(ESPs[p].Box) do v.Thickness = 1; v.Color = Color3.new(1,1,1) end
+            for _, v in pairs(ESPs[p].Box) do v.Thickness = 1; v.Color = Color3.new(1,1,1); v.Visible = false end
             ESPs[p].Health.Filled = true; ESPs[p].Health.Color = Color3.new(0,0,0); ESPs[p].Health.Transparency = 0.5
             ESPs[p].HealthBar.Filled = true; ESPs[p].HealthBar.Color = Colors.Success
             for i=1, 10 do
