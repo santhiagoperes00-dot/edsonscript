@@ -1,7 +1,7 @@
 -- ============================================================
--- EDSON MODZ V8 - MULTI-PLATFORM EDITION (PC & MOBILE)
--- AIMBOT UNIVERSAL | ESP COMPLETO | LAYOUT PREMIUM
--- RAINBOW MIRROR NAME | FOV CENTRALIZADO | PLATFORM SELECT
+-- EDSON MODZ V8 - ULTIMATE MULTI-PLATFORM EDITION
+-- AIMBOT UNIVERSAL (FIXED) | SKELETON ESP | REALISTIC BOX
+-- RAINBOW MIRROR NAME | PC & MOBILE OPTIMIZED
 -- ============================================================
 
 local TweenService    = game:GetService("TweenService")
@@ -30,18 +30,21 @@ local Config = {
     Prediction      = 0.12,
     FOVSize         = 150,
     FOVVisible      = true,
-    TriggerKey      = "MouseButton2", -- PC Default
+    TriggerKey      = "MouseButton2",
 
     -- ESP
     ESPEnabled      = false,
     BoxEnabled      = true,
+    SkeletonEnabled = true,
     NameEnabled     = true,
     HealthEnabled   = true,
-
-    -- MISC
-    WalkSpeed       = 16,
-    SpeedEnabled    = false,
-    Platform        = "PC" -- "PC" ou "Mobile"
+    LineEnabled     = true,
+    
+    -- VISUAL
+    Platform        = "PC",
+    SkeletonColor   = Color3.fromRGB(255, 255, 255),
+    NameColor       = Color3.fromRGB(255, 255, 255),
+    BoxColor        = Color3.fromRGB(255, 255, 255),
 }
 
 -- ==================== PALETA DE CORES PREMIUM ====================
@@ -104,21 +107,18 @@ local function createSelectBtn(text, icon, pos, platform)
         Config.Platform = platform
         if platform == "Mobile" then
             Config.TriggerKey = "Touch"
-            Config.Smoothness = 2 -- Mobile precisa ser mais responsivo
-            Config.FOVSize = 120    -- Ajuste para telas menores
+            Config.Smoothness = 2
+            Config.FOVSize = 120
         end
         SelectFrame:Destroy()
         _G.StartMainScript()
     end)
-    
-    btn.MouseEnter:Connect(function() TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundTransparency = 0.1, BackgroundColor3 = Colors.Primary}):Play() end)
-    btn.MouseLeave:Connect(function() TweenService:Create(btn, TweenInfo.new(0.3), {BackgroundTransparency = 0.4, BackgroundColor3 = Colors.Surface}):Play() end)
 end
 
 createSelectBtn("PC / DESKTOP", "💻", UDim2.new(0, 30, 0, 80), "PC")
 createSelectBtn("MOBILE / CELULAR", "📱", UDim2.new(0, 210, 0, 80), "Mobile")
 
--- ==================== SCRIPT PRINCIPAL (DENTRO DE UMA FUNÇÃO) ====================
+-- ==================== SCRIPT PRINCIPAL ====================
 _G.StartMainScript = function()
     local MainSize = Config.Platform == "Mobile" and UDim2.new(0, 480, 0, 380) or UDim2.new(0, 560, 0, 460)
     local MainPos = UDim2.new(0.5, -MainSize.X.Offset/2, 0.5, -MainSize.Y.Offset/2)
@@ -322,11 +322,13 @@ _G.StartMainScript = function()
     createSlider(s1, "FOV Size", 10, 140, 10, 600, Config.FOVSize, "FOVSize")
     createSlider(s1, "Smoothness", 10, 190, 1, 20, Config.Smoothness, "Smoothness")
 
-    local s2 = createSection(VisualTab, "ESP CONTROLS", 140)
+    local s2 = createSection(VisualTab, "ESP CONTROLS", 240)
     createToggle(s2, "Enable ESP", 10, 40, "ESPEnabled")
-    createToggle(s2, "Box ESP", Config.Platform == "Mobile" and 150 or 190, 40, "BoxEnabled")
-    createToggle(s2, "Name ESP", 10, 90, "NameEnabled")
-    createToggle(s2, "Health ESP", Config.Platform == "Mobile" and 150 or 190, 90, "HealthEnabled")
+    createToggle(s2, "Skeleton ESP", Config.Platform == "Mobile" and 150 or 190, 40, "SkeletonEnabled")
+    createToggle(s2, "Box ESP", 10, 90, "BoxEnabled")
+    createToggle(s2, "Name ESP", Config.Platform == "Mobile" and 150 or 190, 90, "NameEnabled")
+    createToggle(s2, "Health ESP", 10, 140, "HealthEnabled")
+    createToggle(s2, "Line ESP", Config.Platform == "Mobile" and 150 or 190, 140, "LineEnabled")
 
     local s3 = createSection(MiscTab, "MISC CONTROLS", 140)
     createToggle(s3, "Speed Hack", 10, 40, "SpeedEnabled")
@@ -370,26 +372,50 @@ _G.StartMainScript = function()
     local ESPObjects = {}
     local function createESP(p)
         local esp = {
-            Box = Drawing.new("Line"), Box2 = Drawing.new("Line"), Box3 = Drawing.new("Line"), Box4 = Drawing.new("Line"),
-            Name = Drawing.new("Text"), Health = Drawing.new("Text")
+            Box = {Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line"), Drawing.new("Line")},
+            Skeleton = {},
+            Name = Drawing.new("Text"),
+            Health = Drawing.new("Square"),
+            HealthBar = Drawing.new("Square"),
+            Line = Drawing.new("Line")
         }
-        for _, v in pairs(esp) do v.Visible = false; if v.Thickness then v.Thickness = 1.5 end end
-        esp.Name.Size = 14; esp.Name.Center = true; esp.Name.Outline = true
-        esp.Health.Size = 13; esp.Health.Center = true; esp.Health.Outline = true
+        
+        -- Config Name
+        esp.Name.Size = 14; esp.Name.Center = true; esp.Name.Outline = true; esp.Name.Color = Config.NameColor
+        
+        -- Config Line
+        esp.Line.Thickness = 1.5; esp.Line.Color = Config.BoxColor
+        
+        -- Config Box
+        for _, v in pairs(esp.Box) do v.Thickness = 1.5; v.Color = Config.BoxColor; v.Visible = false end
+        
+        -- Config Health
+        esp.Health.Filled = true; esp.Health.Color = Color3.fromRGB(0, 0, 0); esp.Health.Transparency = 0.5
+        esp.HealthBar.Filled = true; esp.HealthBar.Color = Colors.Success
+        
+        -- Config Skeleton (R15/R6)
+        local bones = 10
+        for i=1, bones do
+            local line = Drawing.new("Line")
+            line.Thickness = 2; line.Color = Config.SkeletonColor; line.Visible = false
+            table.insert(esp.Skeleton, line)
+        end
+        
         ESPObjects[p] = esp
     end
 
     -- ==================== LOOP PRINCIPAL ====================
     RunService.RenderStepped:Connect(function()
         local viewport = Camera.ViewportSize
-        FOV_Circle.Position = Vector2.new(viewport.X / 2, viewport.Y / 2)
+        local center = Vector2.new(viewport.X / 2, viewport.Y / 2)
+        FOV_Circle.Position = center
         FOV_Circle.Radius = Config.FOVSize
         FOV_Circle.Visible = Config.AimEnabled and Config.FOVVisible
 
         -- AIMBOT
         local isAiming = false
         if Config.Platform == "Mobile" then
-            isAiming = Config.AimEnabled -- No mobile, se o aimbot estiver ligado, ele busca o alvo
+            isAiming = Config.AimEnabled
         else
             isAiming = Config.AimEnabled and UserInputService:IsMouseButtonPressed(Enum.UserInputType[Config.TriggerKey])
         end
@@ -399,44 +425,81 @@ _G.StartMainScript = function()
             if target then
                 local part = target.Character[Config.SelectedPart]
                 local pos = Camera:WorldToViewportPoint(part.Position + (part.Velocity * Config.Prediction))
-                local mouse = UserInputService:GetMouseLocation()
-                mousemoverel((pos.X - mouse.X) / Config.Smoothness, (pos.Y - mouse.Y) / Config.Smoothness)
+                mousemoverel((pos.X - center.X) / Config.Smoothness, (pos.Y - center.Y) / Config.Smoothness)
             end
         end
 
-        -- ESP
+        -- ESP UPDATE
         for p, esp in pairs(ESPObjects) do
             local char = p.Character
             if Config.ESPEnabled and char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") and char.Humanoid.Health > 0 then
-                local pos, onScreen = Camera:WorldToViewportPoint(char.HumanoidRootPart.Position)
+                local root = char.HumanoidRootPart
+                local pos, onScreen = Camera:WorldToViewportPoint(root.Position)
+                
                 if onScreen then
                     local headPos = Camera:WorldToViewportPoint(char.Head.Position + Vector3.new(0, 0.5, 0))
-                    local legPos = Camera:WorldToViewportPoint(char.HumanoidRootPart.Position - Vector3.new(0, 3, 0))
+                    local legPos = Camera:WorldToViewportPoint(root.Position - Vector3.new(0, 3, 0))
                     local h = math.abs(headPos.Y - legPos.Y)
                     local w = h * 0.6
                     
+                    -- BOX
                     if Config.BoxEnabled then
-                        esp.Box.Visible = true; esp.Box.From = Vector2.new(pos.X - w/2, pos.Y - h/2); esp.Box.To = Vector2.new(pos.X + w/2, pos.Y - h/2)
-                        esp.Box2.Visible = true; esp.Box2.From = Vector2.new(pos.X - w/2, pos.Y + h/2); esp.Box2.To = Vector2.new(pos.X + w/2, pos.Y + h/2)
-                        esp.Box3.Visible = true; esp.Box3.From = Vector2.new(pos.X - w/2, pos.Y - h/2); esp.Box3.To = Vector2.new(pos.X - w/2, pos.Y + h/2)
-                        esp.Box4.Visible = true; esp.Box4.From = Vector2.new(pos.X + w/2, pos.Y - h/2); esp.Box4.To = Vector2.new(pos.X + w/2, pos.Y + h/2)
+                        local left, top = pos.X - w/2, pos.Y - h/2
+                        esp.Box[1].Visible = true; esp.Box[1].From = Vector2.new(left, top); esp.Box[1].To = Vector2.new(left + w, top)
+                        esp.Box[2].Visible = true; esp.Box[2].From = Vector2.new(left, top + h); esp.Box[2].To = Vector2.new(left + w, top + h)
+                        esp.Box[3].Visible = true; esp.Box[3].From = Vector2.new(left, top); esp.Box[3].To = Vector2.new(left, top + h)
+                        esp.Box[4].Visible = true; esp.Box[4].From = Vector2.new(left + w, top); esp.Box[4].To = Vector2.new(left + w, top + h)
                     else
-                        for i=1,4 do esp["Box"..(i==1 and "" or i)].Visible = false end
+                        for _, v in pairs(esp.Box) do v.Visible = false end
                     end
 
+                    -- NAME
                     if Config.NameEnabled then
                         esp.Name.Visible = true; esp.Name.Position = Vector2.new(pos.X, pos.Y - h/2 - 15); esp.Name.Text = p.Name
                     else esp.Name.Visible = false end
 
+                    -- HEALTH
                     if Config.HealthEnabled then
-                        esp.Health.Visible = true; esp.Health.Position = Vector2.new(pos.X, pos.Y + h/2 + 5); esp.Health.Text = math.floor(char.Humanoid.Health) .. " HP"
-                        esp.Health.Color = Color3.fromHSV(char.Humanoid.Health/100 * 0.3, 1, 1)
-                    else esp.Health.Visible = false end
+                        local barH = h * (char.Humanoid.Health / char.Humanoid.MaxHealth)
+                        esp.Health.Visible = true; esp.Health.Position = Vector2.new(pos.X - w/2 - 6, pos.Y - h/2); esp.Health.Size = Vector2.new(4, h)
+                        esp.HealthBar.Visible = true; esp.HealthBar.Position = Vector2.new(pos.X - w/2 - 6, pos.Y + h/2 - barH); esp.HealthBar.Size = Vector2.new(4, barH)
+                        esp.HealthBar.Color = Color3.fromHSV(char.Humanoid.Health/100 * 0.3, 1, 1)
+                    else esp.Health.Visible = false; esp.HealthBar.Visible = false end
+
+                    -- LINE
+                    if Config.LineEnabled then
+                        esp.Line.Visible = true; esp.Line.From = center; esp.Line.To = Vector2.new(pos.X, pos.Y + h/2)
+                    else esp.Line.Visible = false end
+
+                    -- SKELETON (Simplificado para estabilidade)
+                    if Config.SkeletonEnabled then
+                        local parts = {
+                            char:FindFirstChild("Head"), char:FindFirstChild("UpperTorso") or char:FindFirstChild("Torso"),
+                            char:FindFirstChild("LowerTorso") or char:FindFirstChild("Torso"),
+                            char:FindFirstChild("LeftUpperArm") or char:FindFirstChild("Left Arm"), char:FindFirstChild("LeftLowerArm") or char:FindFirstChild("Left Arm"),
+                            char:FindFirstChild("RightUpperArm") or char:FindFirstChild("Right Arm"), char:FindFirstChild("RightLowerArm") or char:FindFirstChild("Right Arm"),
+                            char:FindFirstChild("LeftUpperLeg") or char:FindFirstChild("Left Leg"), char:FindFirstChild("LeftLowerLeg") or char:FindFirstChild("Left Leg"),
+                            char:FindFirstChild("RightUpperLeg") or char:FindFirstChild("Right Leg"), char:FindFirstChild("RightLowerLeg") or char:FindFirstChild("Right Leg")
+                        }
+                        local connections = {{1,2}, {2,3}, {2,4}, {4,5}, {2,6}, {6,7}, {3,8}, {8,9}, {3,10}, {10,11}}
+                        for i, conn in ipairs(connections) do
+                            local p1, p2 = parts[conn[1]], parts[conn[2]]
+                            if p1 and p2 then
+                                local v1, o1 = Camera:WorldToViewportPoint(p1.Position)
+                                local v2, o2 = Camera:WorldToViewportPoint(p2.Position)
+                                if o1 and o2 then
+                                    esp.Skeleton[i].Visible = true; esp.Skeleton[i].From = Vector2.new(v1.X, v1.Y); esp.Skeleton[i].To = Vector2.new(v2.X, v2.Y)
+                                else esp.Skeleton[i].Visible = false end
+                            else esp.Skeleton[i].Visible = false end
+                        end
+                    else
+                        for _, v in pairs(esp.Skeleton) do v.Visible = false end
+                    end
                 else
-                    for _, v in pairs(esp) do v.Visible = false end
+                    for _, v in pairs(esp) do if type(v) == "table" then for _, x in pairs(v) do x.Visible = false end else v.Visible = false end end
                 end
             else
-                for _, v in pairs(esp) do v.Visible = false end
+                for _, v in pairs(esp) do if type(v) == "table" then for _, x in pairs(v) do x.Visible = false end else v.Visible = false end end
             end
         end
 
@@ -448,5 +511,5 @@ _G.StartMainScript = function()
 
     Players.PlayerAdded:Connect(createESP)
     for _, p in ipairs(Players:GetPlayers()) do if p ~= LocalPlayer then createESP(p) end end
-    Players.PlayerRemoving:Connect(function(p) if ESPObjects[p] then for _, v in pairs(ESPObjects[p]) do v:Remove() end ESPObjects[p] = nil end end)
-end
+    Players.PlayerRemoving:Connect(function(p) if ESPObjects[p] then for _, v in pairs(ESPObjects[p]) do if type(v) == "table" then for _, x in pairs(v) do x:Remove() end else v:Remove() end end ESPObjects[p] = nil end end)
+}
