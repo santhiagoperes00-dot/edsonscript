@@ -1,7 +1,7 @@
 -- ============================================================
--- EDSON MODZ V8 - ULTIMATE CUSTOM EDITION
+-- EDSON MODZ V8 - ULTIMATE RAINBOW EDITION (FIXED)
 -- DESIGN ULTRA-PROFISSIONAL | SKELETON ESP | AIMBOT UNIVERSAL
--- 100% PERSONALIZADO POR EDSON | RAINBOW EFFECTS
+-- 100% PERSONALIZADO POR EDSON | RAINBOW EFFECTS REAL
 -- ============================================================
 
 -- Carregar Base Estável
@@ -34,7 +34,7 @@ local Window = EDSON_LIB:CreateWindow({
     Name = "EDSON MODZ V8",
     LoadingTitle = "EDSON MODZ V8",
     LoadingSubtitle = "by EDSON",
-    ShowText = "Show EDSON", -- Personalizado para Mobile
+    ShowText = "EDSON", -- Removido "Show" duplicado, apenas "EDSON"
     ConfigurationSaving = {
         Enabled = true,
         FolderName = "EdsonModz",
@@ -48,7 +48,7 @@ local Window = EDSON_LIB:CreateWindow({
     KeySystem = false
 })
 
--- EFEITO RAINBOW DINÂMICO EM TODOS OS TEXTOS "EDSON"
+-- EFEITO RAINBOW REAL EM TODOS OS TEXTOS "EDSON"
 task.spawn(function()
     while task.wait() do
         pcall(function()
@@ -66,19 +66,26 @@ task.spawn(function()
                     Title.TextColor3 = rainbowColor
                 end
                 
-                -- 2. Botão "Show EDSON" (Mobile)
+                -- 2. Botão "EDSON" (Mobile)
                 local ShowButton = MainUI:FindFirstChild("Open", true) or MainUI:FindFirstChild("Show", true)
                 if ShowButton and ShowButton:FindFirstChildOfClass("TextLabel") then
                     local label = ShowButton:FindFirstChildOfClass("TextLabel")
-                    label.Text = "Show EDSON"
+                    label.Text = "EDSON"
                     label.TextColor3 = rainbowColor
                 end
                 
-                -- 3. Notificações
+                -- 3. Notificações e Outros Textos
                 for _, notify in pairs(MainUI:GetDescendants()) do
-                    if notify:IsA("TextLabel") and (notify.Text:find("EDSON") or notify.Text:find("Rayfield")) then
-                        notify.Text = notify.Text:gsub("Rayfield", "EDSON")
-                        notify.TextColor3 = rainbowColor
+                    if notify:IsA("TextLabel") then
+                        -- Substituir qualquer menção a Rayfield UI por EDSON
+                        if notify.Text:find("Rayfield UI") or notify.Text:find("Rayfield") then
+                            notify.Text = notify.Text:gsub("Rayfield UI", "EDSON"):gsub("Rayfield", "EDSON")
+                        end
+                        
+                        -- Aplicar Rainbow se o texto contiver EDSON
+                        if notify.Text:find("EDSON") then
+                            notify.TextColor3 = rainbowColor
+                        end
                     end
                 end
             end
@@ -390,7 +397,7 @@ for _, p in ipairs(game:GetService("Players"):GetPlayers()) do if p ~= game:GetS
 
 EDSON_LIB:Notify({
     Title = "EDSON MODZ V8",
-    Content = "Bem-vindo de volta, EDSON! Script 100% carregado.",
+    Content = "Bem-vindo de volta, EDSON! Tudo carregado.",
     Duration = 5,
     Image = "check-circle",
 })
