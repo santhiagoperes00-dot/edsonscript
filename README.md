@@ -1,9 +1,10 @@
 -- ============================================================
--- EDSON MODZ V8 - PREMIUM PROFESSIONAL EDITION
--- DESIGN ULTRA-FLUIDO | SKELETON ESP | AIMBOT UNIVERSAL
--- RAINBOW MIRROR NAME | CLICK-TO-EXPAND (STARTS MINIMIZED)
+-- EDSON MODZ V8 - ULTIMATE ANIMATED PREMIUM EDITION
+-- DESIGN FLUIDO | SKELETON ESP | AIMBOT UNIVERSAL
+-- RAINBOW MIRROR NAME | CLICK-TO-EXPAND (ANIMATED)
 -- ============================================================
 
+-- Serviços Essenciais
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local UserInputService = game:GetService("UserInputService")
@@ -18,7 +19,7 @@ if _G.EdsonModzLoaded then
 end
 _G.EdsonModzLoaded = true
 
--- Configurações Globais
+-- Configurações (Simples e Diretas)
 local Config = {
     AimEnabled = false,
     TeamCheck = false,
@@ -42,10 +43,10 @@ local Config = {
     SpeedEnabled = false
 }
 
--- Cores Premium (Semi-Transparentes)
+-- Paleta de Cores Premium
 local Colors = {
     Primary = Color3.fromRGB(130, 50, 255),
-    Background = Color3.fromRGB(10, 10, 15),
+    Background = Color3.fromRGB(15, 15, 22),
     Surface = Color3.fromRGB(25, 25, 35),
     Text = Color3.fromRGB(255, 255, 255),
     Success = Color3.fromRGB(46, 204, 113),
@@ -53,7 +54,7 @@ local Colors = {
     Accent = Color3.fromRGB(200, 150, 255)
 }
 
--- ScreenGui Principal
+-- Criar ScreenGui de Forma Segura
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "EdsonModzV8"
 ScreenGui.ResetOnSpawn = false
@@ -73,7 +74,7 @@ local function addCorner(obj, radius)
     c.Parent = obj
 end
 
--- TELA DE SELEÇÃO (Visual Moderno)
+-- TELA DE SELEÇÃO INICIAL (Obrigatória para definir PC/Mobile)
 local SelectFrame = Instance.new("Frame", ScreenGui)
 SelectFrame.Size = UDim2.new(0, 360, 0, 220)
 SelectFrame.Position = UDim2.new(0.5, -180, 0.5, -110)
@@ -115,7 +116,7 @@ end
 createSelectBtn("PC / DESKTOP", UDim2.new(0, 30, 0, 80), "PC")
 createSelectBtn("MOBILE / CELULAR", UDim2.new(0, 190, 0, 80), "Mobile")
 
--- MENU PREMIUM
+-- MENU PRINCIPAL (COM ANIMAÇÕES)
 _G.InitPremiumMenu = function()
     local MainSize = Config.Platform == "Mobile" and UDim2.new(0, 480, 0, 360) or UDim2.new(0, 560, 0, 440)
     local MinimizedSize = UDim2.new(0, 220, 0, 55)
@@ -131,7 +132,7 @@ _G.InitPremiumMenu = function()
     Main.ClipsDescendants = true
     addCorner(Main, 15)
 
-    -- Título Rainbow Mirror (O Botão de Controle)
+    -- Título Rainbow Mirror (Botão de Expansão)
     local TitleBtn = Instance.new("TextButton", Main)
     TitleBtn.Name = "TitleBtn"
     TitleBtn.Size = UDim2.new(1, 0, 0, 55)
@@ -154,7 +155,7 @@ _G.InitPremiumMenu = function()
     })
     RunService.RenderStepped:Connect(function() RainbowGradient.Offset = Vector2.new(tick() % 2 / 2, 0) end)
 
-    -- Container do Conteúdo (Inicia Invisível)
+    -- Container do Conteúdo
     local Container = Instance.new("Frame", Main)
     Container.Name = "Container"
     Container.Size = UDim2.new(1, 0, 1, -55)
@@ -176,7 +177,7 @@ _G.InitPremiumMenu = function()
     Content.Position = UDim2.new(0, 155, 0, 5)
     Content.BackgroundTransparency = 1
 
-    -- Lógica de Minimizar/Expandir
+    -- Lógica de Minimizar/Expandir com Animação
     local IsMinimized = true
     TitleBtn.MouseButton1Click:Connect(function()
         IsMinimized = not IsMinimized
@@ -195,7 +196,7 @@ _G.InitPremiumMenu = function()
         end
     end)
 
-    -- Tabs System
+    -- Sistema de Abas
     local function createTab(parent)
         local tab = Instance.new("ScrollingFrame", parent)
         tab.Size = UDim2.new(1, 0, 1, 0)
@@ -234,7 +235,7 @@ _G.InitPremiumMenu = function()
     createNav("VISUAL", 75, VisualTab)
     createNav("MISC", 130, MiscTab)
 
-    -- UI Components (Toggles e Sliders Premium)
+    -- Componentes UI (Toggles e Sliders)
     local function createToggle(parent, text, key)
         local frame = Instance.new("Frame", parent)
         frame.Size = UDim2.new(1, -5, 0, 45)
@@ -314,7 +315,7 @@ _G.InitPremiumMenu = function()
         end)
     end
 
-    -- Montar Menus
+    -- Montar Tabs
     createToggle(AimTab, "Ativar Aimbot", "AimEnabled")
     createToggle(AimTab, "Team Check", "TeamCheck")
     createToggle(AimTab, "Wall Check", "VisibleCheck")
