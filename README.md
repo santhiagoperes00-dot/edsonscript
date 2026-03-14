@@ -1,5 +1,5 @@
--- EDSON MODZ V7 - ULTIMATE PROFESSIONAL DEFINITIVO (29KB+ FULL VERSION)
--- DESIGN PREMIUM SEMI-TRANSPARENTE | AIM MAGNET (WALL PULL) | CROSS WALL | SPEED HACK | TEXTOS BRANCOS | ESP SIMPLIFICADO
+-- EDSON MODZ V7 - RAGE RAINBOW EDITION (29KB+ FULL VERSION)
+-- DESIGN PREMIUM SEMI-TRANSPARENTE | RAGE AIMBOT INSTANT | FOV SYNC WITH ESP | RAINBOW MIRROR NAME | CROSS WALL | SPEED HACK
 
 local TweenService = game:GetService("TweenService")
 local UIS = game:GetService("UserInputService")
@@ -17,8 +17,7 @@ ScreenGui.DisplayOrder = 999
 -- ==================== CONFIGURAÇÕES GLOBAIS ====================
 local Config = {
     AimEnabled = false,
-    AimMagnet = false,
-    AimMode = "Legit",
+    AimMode = "Legit", -- Opções: "Legit", "Rage"
     TeamCheck = false,
     VisibleCheck = true,
     SelectedPart = "Head",
@@ -55,7 +54,7 @@ local Colors = {
 local ESPObjects = {}
 local Minimized = false
 local MainSize = UDim2.new(0, 600, 0, 520)
-local MinSize = UDim2.new(0, 200, 0, 50)
+local MinSize = UDim2.new(0, 250, 0, 60)
 
 -- ==================== FUNÇÕES DE UTILIDADE ====================
 local function addCorner(obj, radius)
@@ -119,25 +118,50 @@ glowStroke.Color = Colors.Accent
 glowStroke.Transparency = 0.8
 glowStroke.Parent = GlowBorder
 
--- BOTÃO DE NOME (ABRE/FECHA O PAINEL)
+-- BOTÃO DE NOME (RAINBOW & CENTRALIZADO AO MINIMIZAR)
 local UserBtn = Instance.new("TextButton", Main)
-UserBtn.Size = UDim2.new(0, 200, 0, 50)
-UserBtn.Position = UDim2.new(0, 10, 0, 5)
+UserBtn.Size = UDim2.new(1, -40, 0, 50)
+UserBtn.Position = UDim2.new(0, 20, 0, 5)
 UserBtn.Text = "EDSON MODZ"
 UserBtn.BackgroundTransparency = 1
-UserBtn.TextColor3 = Colors.Text
+UserBtn.TextColor3 = Color3.new(1, 1, 1)
 UserBtn.Font = Enum.Font.GothamBold
-UserBtn.TextSize = 24
+UserBtn.TextSize = 26
 UserBtn.TextXAlignment = Enum.TextXAlignment.Left
 
+-- Efeito Rainbow Espelhado no Nome
+local RainbowGradient = Instance.new("UIGradient", UserBtn)
+RainbowGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(255, 0, 0)),
+    ColorSequenceKeypoint.new(0.2, Color3.fromRGB(255, 255, 0)),
+    ColorSequenceKeypoint.new(0.4, Color3.fromRGB(0, 255, 0)),
+    ColorSequenceKeypoint.new(0.6, Color3.fromRGB(0, 255, 255)),
+    ColorSequenceKeypoint.new(0.8, Color3.fromRGB(0, 0, 255)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(255, 0, 255))
+})
+
+RunService.RenderStepped:Connect(function()
+    RainbowGradient.Offset = Vector2.new(tick() % 2 / 2, 0)
+end)
+
+-- Lógica de Minimizar com Nome Centralizado e Animado
 UserBtn.MouseButton1Click:Connect(function()
     Minimized = not Minimized
     if Minimized then
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = MinSize}):Play()
+        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = MinSize}):Play()
+        UserBtn.TextXAlignment = Enum.TextXAlignment.Center
         Main:FindFirstChild("Side").Visible = false
         Main:FindFirstChild("Content").Visible = false
+        
+        -- Animação de Balanço Suave ao Minimizar
+        local shake = TweenService:Create(UserBtn, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {Rotation = 2})
+        shake:Play()
+        UserBtn:SetAttribute("ShakeAnim", shake)
     else
-        TweenService:Create(Main, TweenInfo.new(0.4, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = MainSize}):Play()
+        TweenService:Create(Main, TweenInfo.new(0.5, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {Size = MainSize}):Play()
+        UserBtn.TextXAlignment = Enum.TextXAlignment.Left
+        UserBtn.Rotation = 0
+        if UserBtn:GetAttribute("ShakeAnim") then UserBtn:GetAttribute("ShakeAnim"):Cancel() end
         wait(0.2)
         Main:FindFirstChild("Side").Visible = true
         Main:FindFirstChild("Content").Visible = true
@@ -286,9 +310,14 @@ end
 local aY = 10
 local aimSec1 = createSection(AimTab, "AIMBOT CONTROL", aY, 160); aY = aY + 170
 createToggle(aimSec1, "AIMBOT", 10, 45, "AimEnabled")
-createToggle(aimSec1, "AIM MAGNET", 180, 45, "AimMagnet")
-createToggle(aimSec1, "TEAM CHECK", 10, 100, "TeamCheck")
-createToggle(aimSec1, "VIS CHECK", 180, 100, "VisibleCheck")
+createToggle(aimSec1, "TEAM CHECK", 180, 45, "TeamCheck")
+createToggle(aimSec1, "VIS CHECK", 10, 100, "VisibleCheck")
+
+local ModeBtn = Instance.new("TextButton", aimSec1)
+ModeBtn.Size = UDim2.new(0, 160, 0, 40); ModeBtn.Position = UDim2.new(0, 180, 0, 100); ModeBtn.Font = Enum.Font.GothamBold; ModeBtn.TextColor3 = Colors.Text; ModeBtn.TextSize = 12; addCorner(ModeBtn, 12)
+local function updateMode() ModeBtn.Text = "MODE: " .. Config.AimMode:upper(); ModeBtn.BackgroundColor3 = Config.AimMode == "Rage" and Colors.Danger or Colors.Primary; ModeBtn.BackgroundTransparency = 0.2 end
+ModeBtn.MouseButton1Click:Connect(function() Config.AimMode = Config.AimMode == "Legit" and "Rage" or "Legit"; updateMode() end)
+updateMode()
 
 local aimSec2 = createSection(AimTab, "AIMBOT SETTINGS", aY, 220); aY = aY + 230
 createSlider(aimSec2, "FOV SIZE", 10, 45, 10, 600, 150, "FOVSize")
@@ -350,16 +379,19 @@ end
 local FOV = Drawing.new("Circle"); FOV.Thickness = 2; FOV.NumSides = 60; FOV.Filled = false; FOV.Transparency = 0.4
 
 RunService.RenderStepped:Connect(function()
-    FOV.Color = Colors.Primary; FOV.Radius = Config.FOVSize; FOV.Visible = Config.FOVVisible; FOV.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
+    -- FOV SYNC WITH ESP
+    if Config.ESPEnabled then
+        FOV.Visible = Config.FOVVisible
+    else
+        FOV.Visible = false
+    end
+    
+    FOV.Color = Colors.Primary; FOV.Radius = Config.FOVSize; FOV.Position = Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)
 
     if LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid") then
         if Config.SpeedEnabled then LocalPlayer.Character.Humanoid.WalkSpeed = Config.WalkSpeed else LocalPlayer.Character.Humanoid.WalkSpeed = 16 end
-        
-        -- CROSS WALL (NOCLIP)
         if Config.CrossWall then
-            for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do
-                if part:IsA("BasePart") then part.CanCollide = false end
-            end
+            for _, part in ipairs(LocalPlayer.Character:GetDescendants()) do if part:IsA("BasePart") then part.CanCollide = false end end
         end
     end
 
@@ -410,7 +442,7 @@ RunService.RenderStepped:Connect(function()
                     local pos, vis = Camera:WorldToViewportPoint(part.Position)
                     local dist = (Vector2.new(pos.X, pos.Y) - Vector2.new(Camera.ViewportSize.X/2, Camera.ViewportSize.Y/2)).Magnitude
                     if dist < shortest then 
-                        if Config.VisibleCheck and not IsPlayerVisible(p) and not Config.AimMagnet then continue end
+                        if Config.VisibleCheck and not IsPlayerVisible(p) then continue end
                         shortest = dist; target = p 
                     end
                 end
@@ -419,14 +451,9 @@ RunService.RenderStepped:Connect(function()
         if target then
             local part = target.Character[Config.SelectedPart]
             
-            -- AIM MAGNET (WALL PULL LOGIC)
-            if Config.AimMagnet then
-                local targetPos = part.Position
-                -- Se o alvo estiver atrás de parede, "puxa" a posição visualmente
-                if not IsPlayerVisible(target) then
-                    targetPos = targetPos + Vector3.new(0, 5, 0) -- Puxa para cima para tentar expor
-                end
-                Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, targetPos), 0.5)
+            -- RAGE MODE: INSTANT SNAP | LEGIT MODE: SMOOTH LERP
+            if Config.AimMode == "Rage" then
+                Camera.CFrame = CFrame.new(Camera.CFrame.Position, part.Position)
             else
                 Camera.CFrame = Camera.CFrame:Lerp(CFrame.new(Camera.CFrame.Position, part.Position), Config.Smoothness)
             end
@@ -435,4 +462,4 @@ RunService.RenderStepped:Connect(function()
 end)
 
 Players.PlayerRemoving:Connect(ClearESP)
-print("✅ EDSON MODZ V7 ULTIMATE PROFESSIONAL DEFINITIVO CARREGADO - 29KB+")
+print("✅ EDSON MODZ V7 RAGE RAINBOW EDITION CARREGADO - 29KB+")
