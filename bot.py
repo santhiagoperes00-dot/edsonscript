@@ -9,7 +9,7 @@ import io
 # ================= CONFIGURAÇÕES (LH STORE) =================
 TOKEN_TELEGRAM = "8705531112:AAF0dV9xHrf_4ihgvQuBlr9ED4D8BbqOoEs"
 ID_DONO = 5658716257 
-ID_SECUNDARIO = 5658716257
+ID_SECUNDARIO = 6490804782
 MINHA_CHAVE_PIX = "81985923844"
 USUARIO_SUPORTE = "@LH_Oficial"
 
@@ -70,7 +70,7 @@ def obter_saldo(user_id):
             return float(saldos.get(str(user_id), 0.0))
     except: return 0.0
 
-# --- PROCESSAMENTO DE ARQUIVOS ---
+# --- PROCESSAMENTO DE ARQUIVOS (ADMIN) ---
 
 @bot.message_handler(content_types=['document'])
 def handle_docs(message):
@@ -82,19 +82,14 @@ def handle_docs(message):
         file_info = bot.get_file(message.document.file_id)
         downloaded = bot.download_file(file_info.file_path)
         
-        # ACEITA QUALQUER ARQUIVO QUE COMECE COM "GUEST"
         if nome_original.lower().startswith("guest"):
             id_u = uuid.uuid4().hex[:8]
             caminho_zip = os.path.join(config["dir_estoque"], f"conta_{id_u}.zip")
-            
             with zipfile.ZipFile(caminho_zip, 'w') as zf:
-                # Salva o arquivo com o nome original dele dentro do ZIP
                 zf.writestr(nome_original, downloaded)
-            
-            bot.reply_to(message, f"✅ **Conta Adicionada!**\n📦 Arquivo `{nome_original}` foi processado e adicionado ao estoque.")
+            bot.reply_to(message, f"✅ **Sucesso!** Conta `{nome_original}` adicionada.")
             return
 
-        # PROCESSAMENTO DE LISTAS EM TXT
         ext = os.path.splitext(nome_original)[1].lower()
         if ext == '.txt':
             linhas = downloaded.decode('utf-8', errors='ignore').splitlines()
@@ -111,11 +106,17 @@ def handle_docs(message):
             bot.reply_to(message, f"✅ `{contas}` contas importadas da lista.")
     
     else:
-        # COMPROVANTE DO CLIENTE
+        # COMPROVANTE DO CLIENTE (MANDADO GERAL)
         for adm in [ID_DONO, ID_SECUNDARIO]:
-            markup = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("✅ Aprovar R$ 1", callback_data=f"apr_{uid}_1"))
-            bot.send_document(adm, message.document.file_id, caption=f"📩 Recibo de `{uid}`", reply_markup=markup)
-        bot.reply_to(message, "⏳ **Comprovante enviado!** O ADM irá verificar.")
+            markup = types.InlineKeyboardMarkup().add(
+                types.InlineKeyboardButton("✅ Aprovar R$ 1", callback_data=f"apr_{uid}_1"),
+                types.InlineKeyboardButton("✅ Aprovar R$ 3", callback_data=f"apr_{uid}_3")
+            ).add(
+                types.InlineKeyboardButton("✅ Aprovar R$ 5", callback_data=f"apr_{uid}_5"),
+                types.InlineKeyboardButton("✅ Aprovar R$ 10", callback_data=f"apr_{uid}_10")
+            )
+            bot.send_document(adm, message.document.file_id, caption=f"📩 **NOVO COMPROVANTE**\n👤 Usuário: `{uid}`\n\nEscolha o valor para aprovar:", reply_markup=markup)
+        bot.reply_to(message, "⏳ **Comprovante enviado!** Aguarde enquanto o administrador verifica seu saldo.")
 
 # --- MENUS ---
 
@@ -125,7 +126,7 @@ def menu_principal(user_id):
     msg = (f"╔══════════════════════╗\n"
            f"     💎  **LH STORE** 💎\n"
            f"╚══════════════════════╝\n\n"
-           f"🛒 **Item:** `{config['nome_item']}`\n"
+           f"🛒 **Produto:** `{config['nome_item']}`\n"
            f"🔥 **Estoque:** `{len(estoque)}` un.\n"
            f"💰 **Saldo:** `R$ {saldo:.2f}`\n"
            f"💵 **Preço:** `R$ {config['preco']:.2f}`")
@@ -133,7 +134,7 @@ def menu_principal(user_id):
     markup = types.InlineKeyboardMarkup(row_width=2)
     markup.add(
         types.InlineKeyboardButton("🛒 Comprar", callback_data="buy"),
-        types.InlineKeyboardButton("💳 Recarregar", callback_data="recharge"),
+        types.InlineKeyboardButton("💳 Recarregar", callback_data="recharge_menu"),
         types.InlineKeyboardButton("👨‍💻 Suporte", url=f"https://t.me/{USUARIO_SUPORTE.replace('@','')}")
     )
     if eh_admin(user_id):
@@ -169,27 +170,45 @@ def calls(call):
         item = estoque[0]
         if ajustar_saldo(uid, -config["preco"]):
             with open(os.path.join(config["dir_estoque"], item), 'rb') as f:
-                bot.send_document(cid, f, caption="✅ **Compra realizada!**")
+                bot.send_document(cid, f, caption="✅ **Compra realizada com sucesso!**")
             os.remove(os.path.join(config["dir_estoque"], item))
         else: bot.answer_callback_query(call.id, "❌ Erro.")
 
-    elif call.data == "recharge":
-        bot.edit_message_text(f"💳 **PIX:** `{MINHA_CHAVE_PIX}`\n\nEnvie o comprovante para análise.", cid, mid, parse_mode="Markdown")
+    # NOVO MENU DE RECARGA
+    elif call.data == "recharge_menu":
+        markup = types.InlineKeyboardMarkup(row_width=2)
+        markup.add(
+            types.InlineKeyboardButton("R$ 1,00", callback_data="pix_1"),
+            types.InlineKeyboardButton("R$ 3,00", callback_data="pix_3"),
+            types.InlineKeyboardButton("R$ 5,00", callback_data="pix_5"),
+            types.InlineKeyboardButton("R$ 10,00", callback_data="pix_10"),
+            types.InlineKeyboardButton("⬅️ Voltar", callback_data="voltar")
+        )
+        bot.edit_message_text("💳 **ESCOLHA O VALOR DA RECARGA**", cid, mid, reply_markup=markup)
 
+    elif call.data.startswith("pix_"):
+        valor_pix = call.data.split("_")[1]
+        msg_pix = (f"⚠️ **AVISO IMPORTANTE**\n\n"
+                   f"Para carregar seu saldo, realize o Pix de **R$ {valor_pix},00** para a chave abaixo:\n\n"
+                   f"🔑 Chave: `{MINHA_CHAVE_PIX}`\n\n"
+                   f"📸 **Após pagar, envie o COMPROVANTE aqui no bot** para o dono aprovar seu saldo.")
+        bot.edit_message_text(msg_pix, cid, mid, parse_mode="Markdown")
+
+    # PAINEL GESTOR
     elif call.data == "adm_painel":
         if not eh_admin(uid): return
         markup = types.InlineKeyboardMarkup(row_width=2)
         markup.add(
-            types.InlineKeyboardButton("💰 Add Saldo", callback_data="adm_add_saldo"),
+            types.InlineKeyboardButton("💰 Add Saldo manual", callback_data="adm_add_saldo"),
             types.InlineKeyboardButton("🏷️ Mudar Preço", callback_data="adm_set_price"),
             types.InlineKeyboardButton("🗑️ Limpar Estoque", callback_data="adm_clear"),
             types.InlineKeyboardButton("🚫 Banir ID", callback_data="adm_ban"),
             types.InlineKeyboardButton("⬅️ Voltar", callback_data="voltar")
         )
-        bot.edit_message_text("🛠️ **GESTOR LH STORE**\n\n*Envie qualquer arquivo que comece com 'guest' para adicionar.*", cid, mid, reply_markup=markup, parse_mode="Markdown")
+        bot.edit_message_text("🛠️ **GESTOR LH STORE**", cid, mid, reply_markup=markup)
 
     elif call.data == "adm_add_saldo":
-        m = bot.send_message(cid, "💰 Digite o **ID** e o **VALOR** (Ex: `5658716257 10.00`):")
+        m = bot.send_message(cid, "💰 Digite: `ID VALOR` (Ex: `1234567 5.00`):")
         bot.register_next_step_handler(m, processar_add_saldo)
 
     elif call.data == "adm_set_price":
@@ -202,14 +221,14 @@ def calls(call):
         calls(types.CallbackQuery(id=call.id, from_user=call.from_user, chat_instance=None, message=call.message, data="adm_painel"))
 
     elif call.data == "adm_ban":
-        m = bot.send_message(cid, "🚫 Mande o ID para banimento:")
+        m = bot.send_message(cid, "🚫 ID para banir:")
         bot.register_next_step_handler(m, lambda msg: [open(DB_BANIDOS, "a").write(f"{msg.text}\n"), bot.send_message(cid, "✅ Banido!")])
 
     elif call.data.startswith("apr_"):
         _, target, val = call.data.split("_")
         ajustar_saldo(target, float(val))
-        bot.send_message(target, f"✅ Saldo de **R$ {val}** aprovado!")
-        bot.edit_message_caption(f"✅ Saldo aprovado para {target}", cid, mid)
+        bot.send_message(target, f"✅ **SALDO CARREGADO!**\nO administrador aprovou seu Pix de **R$ {val},00**.")
+        bot.edit_message_caption(f"✅ Saldo de R$ {val} aprovado para {target}", cid, mid)
 
 # --- STEPS ---
 
@@ -226,8 +245,8 @@ def processar_set_price(message):
         config["preco"] = np
         salvar_config(config)
         bot.reply_to(message, f"✅ Preço atualizado: **R$ {np:.2f}**")
-    except: bot.reply_to(message, "❌ Digite um valor válido.")
+    except: bot.reply_to(message, "❌ Valor inválido.")
 
 if __name__ == "__main__":
-    print("🚀 LH STORE - FILTRO GUEST ATIVADO!")
+    print("🚀 LH STORE — SISTEMA DE RECARGA ATUALIZADO!")
     bot.infinity_polling()
