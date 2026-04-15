@@ -486,3 +486,5 @@ def reposicao(message):
         file_info = bot.get_file(message.document.file_id)
         # Gera um nome único para o arquivo para evitar sobrescrever itens com o mesmo nome
         ext = os.path.splitext(message.document.file_name)[1]
+bot.infinity_polling()
+
