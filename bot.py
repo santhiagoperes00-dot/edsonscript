@@ -485,4 +485,4 @@ def reposicao(message):
     if message.content_type == 'document':
         file_info = bot.get_file(message.document.file_id)
         # Gera um nome único para o arquivo para evitar sobrescrever itens com o mesmo nome
-        ext = os.path.splitext(message.document.file_name)[
+        ext = os.path.splitext(message.document.file_name)[1]
