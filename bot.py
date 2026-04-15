@@ -8,7 +8,7 @@ import shutil
 import uuid
 
 # ================= CONFIGURAÇÕES (LH STORE) =================
-TOKEN_TELEGRAM = "8639548881:AAFqtns0w9rxW_Bo2d8k-iI3Hx9tN4Ob2oI"
+TOKEN_TELEGRAM = "8705531112:AAF0dV9xHrf_4ihgvQuBlr9ED4D8BbqOoEs"
 ID_DONO = 5658716257
 MINHA_CHAVE_PIX = "81985923844"
 USUARIO_SUPORTE = "https://t.me/+yosdW4vGPsRkY2Ex"
