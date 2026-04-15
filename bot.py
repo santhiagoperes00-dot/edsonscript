@@ -9,17 +9,15 @@ import io
 # ================= CONFIGURAÇÕES (LH STORE) =================
 TOKEN_TELEGRAM = "8705531112:AAF0dV9xHrf_4ihgvQuBlr9ED4D8BbqOoEs"
 ID_DONO = 5658716257 
-ID_SECUNDARIO = 8308508544
+ID_SECUNDARIO = 6490804782
 MINHA_CHAVE_PIX = "81985923844"
 USUARIO_SUPORTE = "@LH_Oficial"
 
-# Arquivos de Banco de Dados
 DB_USUARIOS = "usuarios.txt"
 DB_BANIDOS = "banidos.txt"
 DB_SALDOS = "saldos.json" 
 DB_CONFIG = "config.json"
 
-# Carregar ou Iniciar Configurações (Preço e Nome)
 def carregar_config():
     if os.path.exists(DB_CONFIG):
         with open(DB_CONFIG, "r") as f: return json.load(f)
@@ -36,7 +34,8 @@ config = carregar_config()
 bot = telebot.TeleBot(TOKEN_TELEGRAM)
 
 # --- INICIALIZAÇÃO ---
-if not os.path.exists(config["dir_estoque"]): os.makedirs(config["dir_estoque"])
+if not os.path.exists(config["dir_estoque"]): 
+    os.makedirs(config["dir_estoque"])
 
 def iniciar_bancos():
     if not os.path.exists(DB_BANIDOS): open(DB_BANIDOS, "w").close()
@@ -71,55 +70,55 @@ def obter_saldo(user_id):
             return float(saldos.get(str(user_id), 0.0))
     except: return 0.0
 
-def criar_pacote_garena(uid_c, pwd_c):
-    nome_zip = f"conta_{uuid.uuid4().hex[:8]}.zip"
-    caminho = os.path.join(config["dir_estoque"], nome_zip)
-    conteudo_dat = {
-        "guest_account_info": {
-            "com.garena.msdk.guest_uid": str(uid_c).strip(),
-            "com.garena.msdk.guest_password": str(pwd_c).strip()
-        }
-    }
-    with zipfile.ZipFile(caminho, 'w') as zf:
-        zf.writestr("guest100067.dat", json.dumps(conteudo_dat))
-    return nome_zip
-
-# --- PROCESSAMENTO DE ARQUIVOS (TXT/ZIP) ---
+# --- PROCESSAMENTO DE ARQUIVOS (UMA POR UMA OU LISTA) ---
 
 @bot.message_handler(content_types=['document'])
 def handle_docs(message):
     uid = message.from_user.id
     if eh_banido(uid): return
+
     if eh_admin(uid):
-        ext = os.path.splitext(message.document.file_name)[1].lower()
-        if ext not in ['.txt', '.zip']: return
-        
+        nome_original = message.document.file_name
         file_info = bot.get_file(message.document.file_id)
         downloaded = bot.download_file(file_info.file_path)
-        contas = 0
         
+        # CASO 1: ARQUIVO GUEST DIRETO (UMA POR UMA)
+        if nome_original == "guest100067.dat":
+            id_u = uuid.uuid4().hex[:8]
+            caminho_zip = os.path.join(config["dir_estoque"], f"conta_{id_u}.zip")
+            
+            with zipfile.ZipFile(caminho_zip, 'w') as zf:
+                zf.writestr("guest100067.dat", downloaded)
+            
+            bot.reply_to(message, f"✅ **Conta Adicionada!**\n📦 Arquivo: `conta_{id_u}.zip` adicionado ao estoque.")
+            return
+
+        # CASO 2: LISTAS TXT OU ZIP (PROCESSAMENTO EM MASSA)
+        ext = os.path.splitext(nome_original)[1].lower()
+        contas = 0
         if ext == '.txt':
             linhas = downloaded.decode('utf-8', errors='ignore').splitlines()
             for l in linhas:
                 p = l.replace(':', ' ').replace(';', ' ').split()
                 if len(p) >= 2:
-                    criar_pacote_garena(p[0], p[1])
+                    # Cria o JSON no formato Garena se for TXT
+                    id_zip = uuid.uuid4().hex[:8]
+                    caminho = os.path.join(config["dir_estoque"], f"conta_{id_zip}.zip")
+                    js = {"guest_account_info": {"com.garena.msdk.guest_uid": p[0], "com.garena.msdk.guest_password": p[1]}}
+                    with zipfile.ZipFile(caminho, 'w') as zf:
+                        zf.writestr("guest100067.dat", json.dumps(js))
                     contas += 1
+            bot.reply_to(message, f"✅ Importadas `{contas}` contas da lista TXT.")
+        
         elif ext == '.zip':
-            with zipfile.ZipFile(io.BytesIO(downloaded)) as z:
-                for f_name in z.namelist():
-                    if f_name.endswith('.txt'):
-                        linhas = z.read(f_name).decode('utf-8', errors='ignore').splitlines()
-                        for l in linhas:
-                            p = l.replace(':', ' ').replace(';', ' ').split()
-                            if len(p) >= 2:
-                                criar_pacote_garena(p[0], p[1])
-                                contas += 1
-        bot.reply_to(message, f"✅ Adicionadas `{contas}` contas individuais.")
+            bot.reply_to(message, "⚠️ Para arquivos ZIP, o bot processará se houver TXTs dentro. Se for uma conta pronta, mande o `.dat`.")
+
     else:
+        # CLIENTE MANDANDO COMPROVANTE
         for adm in [ID_DONO, ID_SECUNDARIO]:
-            m = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("✅ Aprovar R$ 1", callback_data=f"apr_{uid}_1"))
-            bot.send_document(adm, message.document.file_id, caption=f"📩 Recibo de `{uid}`", reply_markup=m)
+            markup = types.InlineKeyboardMarkup().add(types.InlineKeyboardButton("✅ Aprovar R$ 1", callback_data=f"apr_{uid}_1"))
+            bot.send_document(adm, message.document.file_id, caption=f"📩 Recibo de `{uid}`", reply_markup=markup)
+        bot.reply_to(message, "⏳ **Comprovante enviado!** Aguarde o ADM.")
 
 # --- MENUS ---
 
@@ -130,7 +129,7 @@ def menu_principal(user_id):
            f"     💎  **LH STORE** 💎\n"
            f"╚══════════════════════╝\n\n"
            f"🛒 **Produto:** `{config['nome_item']}`\n"
-           f"🔥 **Em Estoque:** `{len(estoque)}` un.\n"
+           f"🔥 **Estoque:** `{len(estoque)}` un.\n"
            f"💰 **Saldo:** `R$ {saldo:.2f}`\n"
            f"💵 **Preço:** `R$ {config['preco']:.2f}`")
     
@@ -150,7 +149,7 @@ def cmd_start(message):
     msg, markup = menu_principal(message.from_user.id)
     bot.send_message(message.chat.id, msg, reply_markup=markup, parse_mode="Markdown")
 
-# --- CALLBACKS E NOVAS FUNÇÕES ADMIN ---
+# --- CALLBACKS E GESTÃO ---
 
 @bot.callback_query_handler(func=lambda call: True)
 def calls(call):
@@ -173,14 +172,14 @@ def calls(call):
         item = estoque[0]
         if ajustar_saldo(uid, -config["preco"]):
             with open(os.path.join(config["dir_estoque"], item), 'rb') as f:
-                bot.send_document(cid, f, caption="✅ Entrega concluída!")
+                bot.send_document(cid, f, caption="✅ **Sua conta Garena!**")
             os.remove(os.path.join(config["dir_estoque"], item))
-        else: bot.answer_callback_query(call.id, "❌ Erro.")
+        else: bot.answer_callback_query(call.id, "❌ Erro no débito.")
 
     elif call.data == "recharge":
-        bot.edit_message_text(f"💳 PIX: `{MINHA_CHAVE_PIX}`\nEnvie o comprovante.", cid, mid, parse_mode="Markdown")
+        bot.edit_message_text(f"💳 **PAGAMENTO PIX**\n\nChave: `{MINHA_CHAVE_PIX}`\n\nEnvie o comprovante abaixo.", cid, mid, parse_mode="Markdown")
 
-    # --- NOVO PAINEL ADMIN ---
+    # --- ÁREA GESTOR ---
     elif call.data == "adm_painel":
         if not eh_admin(uid): return
         markup = types.InlineKeyboardMarkup(row_width=2)
@@ -191,53 +190,48 @@ def calls(call):
             types.InlineKeyboardButton("🚫 Banir ID", callback_data="adm_ban"),
             types.InlineKeyboardButton("⬅️ Voltar", callback_data="voltar")
         )
-        bot.edit_message_text("🛠️ **GESTÃO LH STORE**", cid, mid, reply_markup=markup)
+        bot.edit_message_text("🛠️ **PAINEL DE GESTÃO LH**\n\n*Dica: Mande o arquivo guest100067.dat direto para adicionar uma conta.*", cid, mid, reply_markup=markup, parse_mode="Markdown")
 
     elif call.data == "adm_add_saldo":
-        m = bot.send_message(cid, "💰 Digite o **ID** e o **VALOR** (ex: `5658716257 10.50`):")
+        m = bot.send_message(cid, "💰 Digite o **ID** e o **VALOR** (Ex: `5658716257 5.00`):")
         bot.register_next_step_handler(m, processar_add_saldo)
 
     elif call.data == "adm_set_price":
-        m = bot.send_message(cid, "🏷️ Digite o **novo preço** (ex: `0.50`):")
+        m = bot.send_message(cid, "🏷️ Digite o novo preço (Ex: `0.50`):")
         bot.register_next_step_handler(m, processar_set_price)
 
     elif call.data == "adm_clear":
         for f in os.listdir(config["dir_estoque"]): os.remove(os.path.join(config["dir_estoque"], f))
-        bot.answer_callback_query(call.id, "💣 Estoque limpo!", show_alert=True)
+        bot.answer_callback_query(call.id, "💣 Estoque esvaziado!", show_alert=True)
         calls(types.CallbackQuery(id=call.id, from_user=call.from_user, chat_instance=None, message=call.message, data="adm_painel"))
 
     elif call.data == "adm_ban":
-        m = bot.send_message(cid, "🚫 ID para banir:")
+        m = bot.send_message(cid, "🚫 Mande o ID para banir:")
         bot.register_next_step_handler(m, lambda msg: [open(DB_BANIDOS, "a").write(f"{msg.text}\n"), bot.send_message(cid, "✅ Banido!")])
 
     elif call.data.startswith("apr_"):
-        _, target, val = call.data.split("_")
-        ajustar_saldo(target, float(val))
-        bot.send_message(target, f"✅ R$ {val} adicionados!")
-        bot.edit_message_caption(f"✅ Aprovado para {target}", cid, mid)
+        _, target, v = call.data.split("_")
+        ajustar_saldo(target, float(v))
+        bot.send_message(target, f"✅ Seu saldo foi recarregado em **R$ {v}**!")
+        bot.edit_message_caption(f"✅ Saldo de R$ {v} aprovado para {target}", cid, mid)
 
-# --- PROCESSADORES DE ETAPA (STEP HANDLERS) ---
+# --- STEPS ---
 
 def processar_add_saldo(message):
     try:
-        partes = message.text.split()
-        target_id, valor = partes[0], float(partes[1])
-        if ajustar_saldo(target_id, valor):
-            bot.reply_to(message, f"✅ Adicionado R$ {valor} ao ID `{target_id}`")
-            bot.send_message(target_id, f"💰 **LH STORE:** O administrador adicionou R$ {valor} ao seu saldo!")
-        else: raise Exception
-    except:
-        bot.reply_to(message, "❌ Erro! Use o formato: `ID VALOR` (ex: `12345678 5.00`) ")
+        p = message.text.split()
+        if ajustar_saldo(p[0], float(p[1])):
+            bot.reply_to(message, f"✅ R$ {p[1]} adicionados ao ID `{p[0]}`")
+    except: bot.reply_to(message, "❌ Erro! Use: `ID VALOR`")
 
 def processar_set_price(message):
     try:
-        novo_preco = float(message.text.replace(',', '.'))
-        config["preco"] = novo_preco
+        np = float(message.text.replace(',', '.'))
+        config["preco"] = np
         salvar_config(config)
-        bot.reply_to(message, f"✅ Preço das contas alterado para: **R$ {novo_preco:.2f}**")
-    except:
-        bot.reply_to(message, "❌ Erro! Digite apenas o número (ex: `0.45`) ")
+        bot.reply_to(message, f"✅ Preço atualizado para **R$ {np:.2f}**")
+    except: bot.reply_to(message, "❌ Digite um valor válido.")
 
 if __name__ == "__main__":
-    print("🤖 LH STORE — GESTÃO COMPLETA ATIVA!")
+    print("🚀 LH STORE RODANDO!")
     bot.infinity_polling()
