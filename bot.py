@@ -191,7 +191,7 @@ def calls(call):
         msg_pix = (f"⚠️ **AVISO IMPORTANTE**\n\n"
                    f"Para carregar seu saldo, realize o Pix de **R$ {valor_pix},00** para a chave abaixo:\n\n"
                    f"🔑 Chave: `{MINHA_CHAVE_PIX}`\n\n"
-                   f"📸 **Após pagar, envie o COMPROVANTE aqui @LH_Oficial** para o dono aprovar seu saldo.")
+                   f"📸 **Após pagar, envie o COMPROVANTE aqui @LH_Oficial ** para o dono aprovar seu saldo.")
         bot.edit_message_text(msg_pix, cid, mid, parse_mode="Markdown")
 
     # PAINEL GESTOR
